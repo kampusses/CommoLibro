@@ -6,10 +6,15 @@ LINGUAGGIO:
 BASIC V2
 
 STATO:
-M01 primo sprite        IN SVILUPPO
-M02 joystick            
-M03 limiti movimento    
-M04 primo avversario    
+M01 – compare l'automobile         - IN SVILUPPO
+M02 – movimento con joystick
+M03 – limiti dell'area di gioco
+M04 – primo avversario
+M05 – movimento dell'avversario
+M06 – collisioni
+M07 – fuoco e proiettile
+M08 – punteggio
+M09 – strada  
 
 DECISIONI:
 - road combat verticale
