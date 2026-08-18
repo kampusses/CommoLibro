@@ -1,0 +1,572 @@
+% This file was converted to LaTeX by Writer2LaTeX ver. 1.9.9
+% see http://writer2latex.sourceforge.net for more info
+\documentclass{article}
+\usepackage{calc,amsmath,amssymb,amsfonts}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage[style=numeric,backend=biber]{biblatex}
+\author{utente}
+\date{2026-08-18}
+\begin{document}
+Capitolo 2 – La prima automobile
+
+Per oltre quarant'anni il videogioco che avevo immaginato da ragazzo non aveva avuto una sola riga di codice. Era
+rimasto confinato nelle conversazioni con gli amici, nelle idee appuntate soltanto nella memoria e in quella
+convinzione, tipica di quando si è giovani, che prima o poi sarebbe arrivato il momento giusto per cominciare. Quel
+momento non era arrivato allora, ma adesso il Commodore 64 era nuovamente davanti a me e non avevo più alcuna ragione
+per rimandare.
+
+Restava però una domanda che, per un programmatore, è spesso più difficile di quanto sembri: da dove si comincia?
+
+Se pensiamo al gioco nella forma che vorremmo raggiungere, la risposta rischia di diventare immediatamente complicata.
+Immaginiamo una strada che scorre, l'automobile del giocatore, i veicoli avversari, gli ostacoli ai lati della
+carreggiata, gli spari, il punteggio e, più avanti, suoni ed effetti capaci di dare al tutto il ritmo di un vero gioco
+d'azione. Sono elementi che nella nostra mente esistono già contemporaneamente, perché possiamo immaginare il risultato
+finale molto prima di essere in grado di costruirlo.
+
+Un programma, invece, ci costringe a procedere in un altro modo. Prima della strada deve esistere qualcosa che possa
+percorrerla; prima degli avversari deve esserci il veicolo del giocatore; prima di leggere il joystick dobbiamo avere
+qualcosa da muovere. La nostra prima milestone, che chiameremo semplicemente M01, avrà quindi un obiettivo molto più
+modesto dell'intero videogioco: fare comparire sullo schermo la nostra automobile.
+
+Potrebbe sembrare poco. In realtà sarà sufficiente per costringerci a entrare per la prima volta dentro il funzionamento
+del VIC-II e a scoprire uno degli strumenti che hanno reso il Commodore 64 una macchina particolarmente adatta ai
+videogiochi.
+
+Prima prepariamo lo schermo
+
+Il nostro primo listato comincia senza occuparsi ancora dell'automobile. Prima di mostrare qualsiasi cosa, vogliamo
+infatti sapere in quale condizione si trova lo schermo sul quale lavoreremo.
+
+Le prime istruzioni operative della M01 sono queste:
+
+60 rem pulisce lo schermo
+
+70 print chr\$(147)
+
+80 rem bordo nero
+
+90 poke 53280,0
+
+100 rem sfondo grigio chiaro
+
+110 poke 53281,15
+
+PRINT CHR\$(147) invia al Commodore il carattere di controllo che pulisce lo schermo. Potremmo eseguire il programma
+anche senza questa istruzione, ma il risultato dipenderebbe da ciò che era presente sul monitor prima del RUN.
+Preferiamo invece che sia il programma stesso a costruire, per quanto possibile, il proprio stato iniziale.
+
+Le due istruzioni successive ci fanno incontrare una parola che utilizzeremo moltissime volte: POKE.
+
+Nel BASIC del Commodore 64, POKE permette di scrivere direttamente un valore in una determinata locazione di memoria. La
+sua forma è molto semplice:
+
+POKE indirizzo,valore
+
+Dietro questa semplicità si nasconde però una delle caratteristiche fondamentali della macchina. Sul Commodore 64 alcune
+locazioni di memoria non servono soltanto a conservare numeri: sono collegate direttamente ai dispositivi hardware.
+Scrivere un valore in uno di questi indirizzi significa quindi modificare il comportamento di un componente del
+computer.
+
+L'indirizzo 53280, per esempio, corrisponde al registro che controlla il colore del bordo dello schermo. Scrivendovi il
+valore zero scegliamo il nero:
+
+90 poke 53280,0
+
+La locazione successiva, 53281, controlla invece il colore dello sfondo. Il valore 15 rappresenta il grigio chiaro:
+
+110 poke 53281,15
+
+Non abbiamo ancora disegnato nulla, ma abbiamo già fatto qualcosa di importante: per la prima volta il nostro programma
+non si è limitato a stampare un testo attraverso il BASIC. Ha scritto direttamente in due registri del chip video e il
+VIC-II ha reagito modificando ciò che vediamo.
+
+Molti anni fa Rossi Brunori aveva usato parole molto più semplici per farmi comprendere questo principio. Il computer,
+diceva, fa quello che gli scriviamo. Allora lo avevo visto con un PRINT {\textquotedbl}CIAO{\textquotedbl}. Adesso
+stiamo cominciando a scoprire che alcune delle conversazioni più interessanti con il Commodore non passano
+necessariamente dalle parole del BASIC: a volte basta scrivere il numero giusto nel posto giusto.
+
+Un'automobile fatta di numeri
+
+Preparato lo schermo, possiamo finalmente occuparci del protagonista della nostra prima milestone.
+
+Il VIC-II mette a disposizione otto oggetti grafici indipendenti dallo schermo testuale: gli sprite. Per il momento
+possiamo immaginarli come piccoli disegni che il chip video è in grado di sovrapporre al resto dell'immagine e spostare
+modificandone semplicemente le coordinate.
+
+È esattamente ciò che ci serve. La nostra automobile dovrà muoversi continuamente quando introdurremo il joystick e, più
+avanti, dovrà convivere con veicoli avversari e altri elementi del gioco. Disegnarla direttamente dentro lo schermo
+sarebbe possibile, ma significherebbe dover cancellare e ridisegnare continuamente la sua immagine. Uno sprite nasce
+invece proprio per rappresentare oggetti di questo tipo.
+
+Uno sprite standard del Commodore 64 misura 24 punti in larghezza e 21 in altezza. In modalità monocromatica ogni punto
+corrisponde a un singolo bit: acceso o spento. Poiché una riga contiene 24 bit e un byte ne contiene 8, per descrivere
+una riga sono necessari tre byte:
+
+24 / 8 = 3 byte
+
+Moltiplicandoli per le 21 righe otteniamo:
+
+21 × 3 = 63 byte
+
+Ed ecco spiegato il numero che compare nel primo ciclo importante della M01:
+
+130 rem carica i 63 byte dello sprite
+
+140 rem a partire da \$0340 = 832
+
+150 for i=0 to 62
+
+160 read a
+
+170 poke 832+i,a
+
+180 next i
+
+Il ciclo parte da zero e arriva a 62. È facile, soprattutto le prime volte, guardare quei due valori e pensare che siano
+soltanto 62 iterazioni; contando anche lo zero, invece, ne otteniamo esattamente 63.
+
+Ad ogni passaggio READ A legge uno dei valori memorizzati nelle istruzioni DATA che troveremo alla fine del programma.
+La riga successiva lo copia in memoria:
+
+170 poke 832+i,a
+
+Alla prima iterazione I vale zero e quindi il primo valore viene scritto all'indirizzo 832. Alla seconda I vale 1 e
+scriviamo nell'833. Il procedimento continua fino a quando l'ultimo dei 63 byte viene depositato all'indirizzo 894.
+
+È interessante osservare che le istruzioni DATA possono trovarsi anche molto più avanti nel listato. READ non pretende
+che siano collocate immediatamente dopo il ciclo: il BASIC le cerca nel programma e ne preleva i valori nell'ordine in
+cui sono stati scritti. Questo ci permette di tenere separata la parte esecutiva dalla lunga sequenza numerica che
+descrive graficamente l'automobile.
+
+Resta però una domanda: perché abbiamo scelto proprio l'indirizzo 832?
+
+Il blocco numero 13
+
+Gli sprite non possono essere memorizzati in un punto arbitrario della memoria. Il VIC-II li cerca all'inizio di blocchi
+da 64 byte. Il nostro disegno ne utilizza 63; il blocco che lo contiene, però, ne occupa comunque 64.
+
+L'indirizzo 832 è particolarmente comodo perché è esattamente divisibile per 64:
+
+832 / 64 = 13
+
+Il nostro sprite occupa quindi il blocco numero 13.
+
+Questa relazione viene riportata esplicitamente nel programma:
+
+200 rem blocco sprite: 832/64 = 13
+
+210 rem puntatore sprite 0 = 2040
+
+220 poke 2040,13
+
+Abbiamo copiato l'immagine a partire dall'indirizzo 832, ma il VIC-II non può sapere autonomamente che proprio lì
+abbiamo deciso di collocare l'automobile. Dobbiamo indicarglielo attraverso un puntatore sprite.
+
+Nella configurazione standard con cui stiamo lavorando, il puntatore dello sprite 0 si trova all'indirizzo 2040.
+Inserendo il valore 13:
+
+220 poke 2040,13
+
+stiamo dicendo al VIC-II che i dati grafici del primo sprite devono essere cercati nel blocco numero 13.
+
+La scelta del termine puntatore comincia quindi a diventare intuitiva. Quel byte non contiene l'immagine e non contiene
+nemmeno l'indirizzo 832 scritto per esteso; contiene un numero che permette al VIC-II di arrivare al blocco nel quale
+si trova l'immagine.
+
+È anche il primo esempio di una caratteristica che incontreremo continuamente lavorando a basso livello sul Commodore
+64: risparmiare memoria significa spesso rappresentare un'informazione nel modo più compatto possibile. Se tutti gli
+sprite devono iniziare su confini da 64 byte, non occorre memorizzarne l'indirizzo completo. Basta indicare quale
+blocco utilizzare.
+
+Dove deve apparire?
+
+A questo punto la nostra automobile esiste in memoria e il VIC-II sa dove recuperarne l'immagine. Non abbiamo ancora
+stabilito, però, dove debba comparire.
+
+Lo sprite 0 possiede una coordinata orizzontale X e una verticale Y. Per questa prima milestone scegliamo semplicemente
+una posizione che ci permetta di osservare comodamente l'automobile:
+
+240 rem posizione iniziale
+
+250 poke 53248,172
+
+260 poke 53249,120
+
+Il registro 53248 contiene la coordinata X dello sprite 0, mentre 53249 ne contiene la coordinata Y. Impostiamo quindi X
+a 172 e Y a 120.
+
+Questi valori non hanno ancora nulla a che fare con la futura carreggiata. Non stiamo decidendo quale sarà la posizione
+di partenza definitiva del giocatore: stiamo semplicemente cercando un punto adatto a verificare che il nostro primo
+sprite venga visualizzato correttamente.
+
+La coordinata X introduce però una piccola particolarità.
+
+Un byte può contenere valori compresi tra 0 e 255, mentre la coordinata orizzontale degli sprite del VIC-II può superare
+255. Per rappresentare quel valore aggiuntivo esiste quindi un altro registro, all'indirizzo 53264, nel quale ciascun
+bit fornisce il nono bit della coordinata X di uno degli otto sprite.
+
+Nella M01 la nostra X vale soltanto 172 e non abbiamo bisogno di quel bit aggiuntivo. Lo azzeriamo esplicitamente:
+
+280 rem azzera il nono bit della x
+
+290 poke 53264,0
+
+Questa istruzione merita una piccola annotazione in prospettiva. Scrivere zero nell'intero registro significa azzerare
+il nono bit della coordinata X di tutti gli sprite, non soltanto dello sprite 0. Adesso non rappresenta un problema,
+perché esiste soltanto la nostra automobile. Quando introdurremo altri sprite non potremo più permetterci di modificare
+l'intero registro senza preoccuparci degli altri bit.
+
+Non abbiamo bisogno di risolvere oggi un problema che ancora non esiste, ma è utile sapere che quella semplicissima riga
+potrebbe non rimanere identica per tutta la vita del progetto.
+
+Nessun ingrandimento
+
+Il VIC-II permette anche di raddoppiare le dimensioni di uno sprite in orizzontale e in verticale. La nostra automobile,
+per il momento, deve invece essere visualizzata nelle sue dimensioni normali, perciò inizializziamo esplicitamente
+entrambi i registri:
+
+310 rem nessun ingrandimento
+
+320 poke 53271,0
+
+330 poke 53277,0
+
+53271 controlla l'espansione verticale degli sprite, mentre 53277 quella orizzontale. Anche in questo caso un singolo
+bit corrisponde a ciascuno degli otto sprite e scrivere zero significa disabilitare l'espansione per tutti.
+
+Potremmo apparentemente omettere queste istruzioni, confidando nel fatto che dopo l'accensione i registri si trovino già
+nella condizione che desideriamo. Abbiamo preferito non farlo. Il nostro programma deve cercare di dichiarare
+esplicitamente lo stato hardware dal quale vuole partire, evitando per quanto possibile di dipendere da ciò che è
+accaduto prima della sua esecuzione.
+
+È un'abitudine che diventerà sempre più importante man mano che il listato crescerà. Un programma facile da capire non è
+soltanto un programma nel quale le istruzioni sono ordinate: è anche un programma che lascia meno stati impliciti
+possibile.
+
+Perché multicolor?
+
+Se ci limitassimo alla modalità standard, ogni punto dello sprite potrebbe trovarsi in una delle due condizioni
+possibili: trasparente oppure colorato. Avremmo quindi una buona risoluzione orizzontale, ma un solo colore visibile.
+
+Per la nostra automobile abbiamo preferito una soluzione diversa.
+
+350 rem sprite 0 in multicolor
+
+360 poke 53276,1
+
+Il registro 53276 stabilisce quali sprite devono utilizzare la modalità multicolor. Scrivendo 1 impostiamo il bit
+relativo allo sprite 0 e lasciamo disattivati gli altri sette.
+
+In modalità multicolor i bit vengono letti a coppie. Di conseguenza non abbiamo più 24 punti orizzontali indipendenti,
+ma 12 elementi grafici più larghi, ciascuno rappresentato da due bit. In cambio possiamo attribuire alle quattro
+combinazioni possibili significati differenti: trasparenza e tre colori visibili.
+
+È un compromesso molto tipico della grafica del Commodore 64. Rinunciamo a una parte della risoluzione orizzontale per
+ottenere maggiore ricchezza cromatica.
+
+Nel nostro caso è una scelta sensata. L'automobile è vista dall'alto, ha dimensioni ridotte e deve essere immediatamente
+riconoscibile sullo schermo. Disporre del rosso per la carrozzeria, del bianco e del nero per alcuni dettagli ci offre
+un risultato più leggibile del semplice sprite monocromatico.
+
+I tre colori vengono configurati con le istruzioni successive:
+
+380 rem multicolor 1 = bianco
+
+390 poke 53285,1
+
+400 rem multicolor 2 = nero
+
+410 poke 53286,0
+
+420 rem colore sprite 0 = rosso
+
+430 poke 53287,2
+
+Gli indirizzi 53285 e 53286 contengono i due colori multicolor condivisi dagli sprite che utilizzano questa modalità.
+Abbiamo scelto rispettivamente il bianco, codice 1, e il nero, codice 0.
+
+Il registro 53287 contiene invece il colore specifico dello sprite 0, che impostiamo a 2, cioè rosso.
+
+Questo significa che l'immagine memorizzata nei 63 byte non contiene direttamente i nomi o i codici dei colori. Contiene
+soltanto coppie di bit. È il VIC-II, leggendo quei bit insieme ai registri che abbiamo appena configurato, a stabilire
+quali punti devono essere trasparenti, quali bianchi, quali neri e quali rossi.
+
+La distinzione è importante: i dati definiscono la forma; i registri contribuiscono a stabilire come quella forma deve
+essere visualizzata.
+
+Se domani decidessimo che l'automobile deve essere blu anziché rossa, non sarebbe necessario ridisegnare lo sprite.
+Basterebbe modificare il valore scritto nel registro del suo colore.
+
+Esiste già, ma non possiamo ancora vederla
+
+A questo punto abbiamo fatto quasi tutto. I dati dell'automobile sono stati copiati nella memoria, il puntatore indica
+il blocco corretto, abbiamo scelto posizione, dimensioni, modalità grafica e colori.
+
+Eppure manca ancora un'istruzione:
+
+450 rem abilita lo sprite 0
+
+460 poke 53269,1
+
+Il registro 53269 decide quali degli otto sprite devono essere visibili. Anche questa volta ogni bit corrisponde a uno
+sprite; il valore 1 attiva il bit zero e quindi abilita lo sprite 0.
+
+Soltanto quando questa istruzione viene eseguita il VIC-II inizia realmente a mostrarci ciò che abbiamo preparato.
+
+È un dettaglio che mi piace particolarmente di questa prima milestone, perché rende molto chiara la distinzione tra
+costruire qualcosa e renderlo visibile. L'automobile esisteva già nei 63 byte memorizzati a partire dall'indirizzo 832.
+Il VIC-II conosceva già il blocco nel quale cercarla, la sua posizione e i suoi colori. Mancava soltanto il consenso a
+visualizzarla.
+
+Ora quel consenso è arrivato.
+
+Sul monitor compare finalmente la nostra automobile.
+
+Non corre ancora, non può essere guidata, non esistono avversari e intorno a lei non c'è nemmeno una strada. Se
+giudicassimo la milestone dalla quantità di azione presente sullo schermo, il risultato potrebbe sembrare quasi
+insignificante. Dal punto di vista del programma, però, abbiamo già attraversato parecchi concetti che ci
+accompagneranno per tutto il progetto.
+
+I numeri che disegnano la macchina
+
+Rimane da vedere ciò che abbiamo lasciato deliberatamente alla fine del listato: i dati grafici veri e propri.
+
+Nella M01 sono organizzati così:
+
+480 rem ===============================
+
+490 rem dati grafici dello sprite
+
+500 rem 21 righe x 3 byte = 63 byte
+
+510 rem ===============================
+
+520 data \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0
+
+530 data \ \ 3, 255, 192, \ \ 0, 170, \ \ 0
+
+540 data \ \ 0, \ 40, \ \ 0, \ \ 1, 170, \ 64
+
+550 data \ \ 3, 150, 192, \ \ 3, 150, 192
+
+560 data \ \ 3, 150, 192, \ \ 0, 150, \ \ 0
+
+570 data \ \ 0, 150, \ \ 0, \ \ 0, 170, \ \ 0
+
+580 data \ \ 0, 190, \ \ 0, \ \ 5, 186, \ 80
+
+590 data \ 15, 190, 240, \ 15, 170, 240
+
+600 data \ 15, 255, 240, \ \ 2, 170, 128
+
+610 data \ \ 2, 170, 128, \ \ 0, \ \ 0, \ \ 0
+
+620 data \ \ 0, \ \ 0, \ \ 0
+
+A prima vista questa è probabilmente la parte meno leggibile dell'intero programma. Una sequenza come 15,190,240 non
+assomiglia affatto a un pezzo di automobile.
+
+Eppure è proprio questo il punto nel quale la rappresentazione grafica diventa memoria.
+
+Ogni gruppo di tre valori descrive una riga dello sprite. Ciascun valore decimale rappresenta un byte e quindi otto bit;
+tre byte consecutivi forniscono i 24 bit necessari per una riga completa. In modalità multicolor quei bit vengono poi
+interpretati a coppie, producendo i dodici elementi orizzontali che possono assumere uno dei quattro significati
+cromatici disponibili.
+
+Non è necessario imparare a riconoscere a colpo d'occhio una carrozzeria dentro la sequenza 15,190,240. Quello che ci
+interessa comprendere è che l'automobile visualizzata sul monitor non esiste, per il computer, come concetto. Il
+Commodore non conosce una ruota, un parabrezza o un cofano: conosce soltanto numeri che, trasformati in bit e
+interpretati dal VIC-II secondo le regole che abbiamo configurato, producono quell'immagine.
+
+Questa distanza tra ciò che vediamo noi e ciò che vede la macchina sarà uno dei temi ricorrenti del nostro lavoro.
+
+Noi vediamo un'automobile.
+
+Il Commodore vede 63 byte.
+
+Entrambe le descrizioni sono corrette; appartengono semplicemente a due livelli differenti dello stesso problema.
+
+C'è anche una scelta di formattazione che vale la pena osservare. I valori sono stati allineati inserendo spazi dopo le
+virgole, in modo che numeri di una, due o tre cifre risultino più facilmente confrontabili. Il BASIC non ne ha bisogno
+e li ignorerebbe anche se fossero scritti tutti attaccati. Ne abbiamo bisogno noi.
+
+Quando un listato deve essere letto, controllato e magari digitato manualmente, la disposizione del codice non è un
+ornamento. È parte della sua qualità.
+
+La M01 completa
+
+Adesso possiamo finalmente guardare il programma per intero. Ogni sua parte dovrebbe risultare molto meno misteriosa di
+quanto sarebbe stata se avessimo incontrato subito il listato completo.
+
+10 rem ================================
+
+20 rem m01 - compare l'automobile
+
+30 rem sprite multicolor giocatore
+
+40 rem ================================
+
+50 rem
+
+60 rem pulisce lo schermo
+
+70 print chr\$(147)
+
+80 rem bordo nero
+
+90 poke 53280,0
+
+100 rem sfondo grigio chiaro
+
+110 poke 53281,15
+
+120 rem
+
+130 rem carica i 63 byte dello sprite
+
+140 rem a partire da \$0340 = 832
+
+150 for i=0 to 62
+
+160 read a
+
+170 poke 832+i,a
+
+180 next i
+
+190 rem
+
+200 rem blocco sprite: 832/64 = 13
+
+210 rem puntatore sprite 0 = 2040
+
+220 poke 2040,13
+
+230 rem
+
+240 rem posizione iniziale
+
+250 poke 53248,172
+
+260 poke 53249,120
+
+270 rem
+
+280 rem azzera il nono bit della x
+
+290 poke 53264,0
+
+300 rem
+
+310 rem nessun ingrandimento
+
+320 poke 53271,0
+
+330 poke 53277,0
+
+340 rem
+
+350 rem sprite 0 in multicolor
+
+360 poke 53276,1
+
+370 rem
+
+380 rem multicolor 1 = bianco
+
+390 poke 53285,1
+
+400 rem multicolor 2 = nero
+
+410 poke 53286,0
+
+420 rem colore sprite 0 = rosso
+
+430 poke 53287,2
+
+440 rem
+
+450 rem abilita lo sprite 0
+
+460 poke 53269,1
+
+470 rem
+
+480 rem ===============================
+
+490 rem dati grafici dello sprite
+
+500 rem 21 righe x 3 byte = 63 byte
+
+510 rem ===============================
+
+520 data \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0
+
+530 data \ \ 3, 255, 192, \ \ 0, 170, \ \ 0
+
+540 data \ \ 0, \ 40, \ \ 0, \ \ 1, 170, \ 64
+
+550 data \ \ 3, 150, 192, \ \ 3, 150, 192
+
+560 data \ \ 3, 150, 192, \ \ 0, 150, \ \ 0
+
+570 data \ \ 0, 150, \ \ 0, \ \ 0, 170, \ \ 0
+
+580 data \ \ 0, 190, \ \ 0, \ \ 5, 186, \ 80
+
+590 data \ 15, 190, 240, \ 15, 170, 240
+
+600 data \ 15, 255, 240, \ \ 2, 170, 128
+
+610 data \ \ 2, 170, 128, \ \ 0, \ \ 0, \ \ 0
+
+620 data \ \ 0, \ \ 0, \ \ 0
+
+Il listato contiene molti commenti rispetto alla quantità di istruzioni realmente eseguite. È una scelta intenzionale.
+Le righe REM non servono al Commodore per capire il programma; servono a noi per ricordare perché una determinata
+istruzione è stata scritta e per rendere riconoscibili le diverse sezioni anche quando il codice comincerà a crescere.
+
+Questa attenzione alla leggibilità può sembrare eccessiva adesso che il programma occupa poche decine di righe. Sarebbe
+invece molto più difficile introdurla quando il gioco ne conterrà centinaia. Stiamo quindi cercando di costruire fin
+dall'inizio non soltanto un programma che funzioni, ma un programma che possiamo continuare a comprendere mentre
+evolve.
+
+Vale la pena osservare anche un'altra caratteristica dei POKE utilizzati in questa prima milestone. Alcuni registri,
+come quelli relativi al nono bit della coordinata X, all'espansione, alla modalità multicolor e all'abilitazione,
+contengono contemporaneamente un bit per ciascuno degli otto sprite. Oggi possiamo scrivere tranquillamente valori come
+0 oppure 1 perché esiste un solo sprite e nessun'altra informazione deve essere preservata. Quando entreranno in scena
+i veicoli avversari, la stessa strategia potrebbe cancellare involontariamente la configurazione degli altri sprite.
+
+Non dobbiamo ancora risolvere questo problema.
+
+Ci basta averlo visto arrivare.
+
+È un buon esempio del modo in cui procederà il nostro progetto: una soluzione perfettamente valida in una milestone può
+mostrare i propri limiti quando il programma cresce. Non significa necessariamente che fosse una cattiva soluzione.
+Significa che il problema è cambiato e che dovremo imparare qualcosa di nuovo per affrontarlo.
+
+È davvero già un videogioco?
+
+Se guardiamo lo schermo dopo aver digitato RUN, vediamo soltanto una piccola automobile rossa, immobile su uno sfondo
+grigio chiaro incorniciato di nero. Sarebbe difficile convincere qualcuno che questo sia già uno shoot'em up
+automobilistico.
+
+Eppure, per me, quel momento possiede un significato particolare.
+
+Quando ero ragazzo avevo immaginato molte volte di realizzare un videogioco sul Commodore 64, ma non avevo mai scritto
+la prima riga di quel progetto. Questa volta, invece, sullo schermo c'è qualcosa che non appartiene più soltanto
+all'immaginazione. È piccolo, non fa ancora nulla e non assomiglia nemmeno lontanamente al gioco che vogliamo
+costruire, ma esiste perché abbiamo cominciato a trasformare un'idea in istruzioni.
+
+Il professor Rossi Brunori, probabilmente, avrebbe trovato qualche modo molto più semplice per dirlo. Forse avrebbe
+guardato quella macchina immobile e ci avrebbe chiesto che cosa mancasse perché diventasse davvero interessante. La
+risposta, questa volta, sarebbe arrivata facilmente.
+
+Deve muoversi.
+
+Ed è esattamente il problema che affronteremo nella prossima milestone.
+
+
+\bigskip
+\end{document}
