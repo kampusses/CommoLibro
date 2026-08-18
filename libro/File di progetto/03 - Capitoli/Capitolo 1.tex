@@ -1,0 +1,175 @@
+% This file was converted to LaTeX by Writer2LaTeX ver. 1.9.9
+% see http://writer2latex.sourceforge.net for more info
+\documentclass{article}
+\usepackage{calc,amsmath,amssymb,amsfonts}
+\usepackage[LGR,T1]{fontenc}
+\usepackage[greek,italian]{babel}
+\usepackage[style=numeric,backend=biber]{biblatex}
+\author{utente}
+\date{2026-08-18}
+\begin{document}
+Capitolo 1 – Il computer non si stanca
+
+La settimana che separava una lezione dalla successiva mi sembrò molto più lunga di sette giorni. A quell'età il tempo
+aveva ancora la capacità di dilatarsi attorno alle cose che aspettavo: una domenica, una festa, un regalo promesso
+potevano sembrare lontanissimi, e quella volta ad attendermi non c'era nemmeno qualcosa che avrei potuto prendere in
+mano una volta tornato a casa. Non possedevo ancora un computer sul quale ripetere gli esperimenti della prima lezione;
+avevo soltanto il ricordo di ciò che avevo visto e poche parole annotate nella memoria con una precisione sorprendente:
+READY, PRINT, RUN.
+
+Continuavo a ripensare soprattutto a quel CIAO apparso sul monitor. Era difficile spiegare perché cinque lettere mi
+avessero impressionato tanto, considerando che avevo già visto videogiochi infinitamente più spettacolari. La
+differenza, però, cominciava a diventarmi chiara: nei giochi potevo scegliere che cosa fare all'interno di regole
+stabilite da qualcun altro, mentre in quell'aula avevo visto nascere una regola davanti ai miei occhi. Prima il
+Commodore non scriveva nulla; poi qualcuno aveva digitato un'istruzione e la macchina aveva obbedito. Da lì le domande
+avevano cominciato a moltiplicarsi: se potevamo fargli scrivere una parola, avremmo potuto farla comparire in un punto
+preciso? Cambiarne il colore? Ripeterla? Far muovere qualcosa? E, inevitabilmente, tornava anche il pensiero ai
+videogiochi e a quella vecchia domanda che non aveva mai smesso di accompagnarmi.
+
+Quando arrivò finalmente il pomeriggio della seconda lezione, entrai nella scuola con una sensazione diversa rispetto
+alla prima volta. Non ero più il bambino che varcava una soglia sconosciuta chiedendosi che cosa avrebbe trovato.
+Conoscevo il percorso fino all'aula, sapevo dove Rossi Brunori avrebbe sistemato il Commodore e riuscivo quasi ad
+anticipare il momento in cui il monitor si sarebbe acceso. Era bastato un solo incontro perché quella stanza, che una
+settimana prima mi sembrava appartenere a un mondo più grande del mio, cominciasse già ad avere qualcosa di familiare.
+
+Il professore era arrivato prima di noi e, insieme a suo figlio, stava terminando di collegare il computer, il monitor e
+il drive. Guardavo quei gesti ripetersi quasi nello stesso ordine della volta precedente e mi accorgevo che stavano già
+diventando una specie di rituale: i cavi sistemati sulla cattedra, il monitor orientato verso la classe, il Commodore
+al centro e infine l'interruttore. Quando lo schermo azzurro comparve nuovamente e sotto le righe iniziali apparve
+READY., ebbi la sensazione curiosa di ritrovare qualcosa che conoscevo da molto più di una settimana.
+
+Rossi Brunori si voltò verso di noi e, con un sorriso, volle verificare quanto fosse sopravvissuto alla distanza tra le
+due lezioni. $\text{\textgreek{«}}$Vediamo un po'. Qualcuno si ricorda come si chiamava il comando che abbiamo usato
+per far scrivere una parola al Commodore?$\text{\textgreek{»}}$ Questa volta le mani si alzarono molto più velocemente
+e PRINT arrivò quasi in coro. Alla domanda successiva, quella sul comando necessario per eseguire il programma, la
+risposta fu altrettanto immediata: RUN.
+
+$\text{\textgreek{«}}$Bene$\text{\textgreek{»}}$, commentò. $\text{\textgreek{«}}$Allora non avete imparato soltanto due
+parole. Qualcosa avete capito.$\text{\textgreek{»}}$
+
+Senza aggiungere altre spiegazioni, digitò il piccolo programma della settimana precedente:
+
+10 PRINT {\textquotedbl}CIAO{\textquotedbl}
+
+Premette RETURN, scrisse RUN e il saluto ricomparve sullo schermo, identico a quello che avevo continuato a ricordare
+per tutta la settimana. Rossi Brunori lo osservò per un istante e poi disse una cosa che mi sorprese:
+$\text{\textgreek{«}}$Adesso abbiamo un problema.$\text{\textgreek{»}}$
+
+Il programma aveva appena fatto esattamente ciò che gli avevamo chiesto e non riuscivo a capire dove potesse nascondersi
+il problema. Il professore indicò la parola CIAO e ci invitò a cambiare punto di vista. Il Commodore sapeva salutarci,
+certo, ma lo faceva una sola volta. Se quella scritta fosse stata un messaggio da mostrare continuamente,
+un'informazione destinata a ripetersi o semplicemente qualcosa che volevamo vedere comparire molte volte, avremmo
+dovuto forse scrivere cento righe identiche?
+
+L'idea fece sorridere qualcuno, ma era proprio l'assurdità di quella soluzione a rendere evidente il problema. Rossi
+Brunori ci propose allora un esempio lontano dal computer: immaginate, disse, di stare all'ingresso di una scuola e di
+dover salutare ogni studente che entra. Al primo direste $\text{\textgreek{«}}$ciao$\text{\textgreek{»}}$ senza
+pensarci, al decimo comincereste probabilmente ad annoiarvi e al centesimo avreste già perso ogni entusiasmo. Una
+macchina, invece, non avrebbe fatto alcuna differenza tra la prima e la millesima ripetizione. Non avrebbe provato
+noia, non avrebbe perso concentrazione e non avrebbe chiesto di fare una pausa.
+
+Quella spiegazione mi colpì perché spostava ancora una volta il confine tra ciò che consideravo una debolezza della
+macchina e ciò che invece poteva diventare la sua forza. Il Commodore non capiva il significato di un saluto e non
+provava alcun piacere nel ripeterlo, ma proprio per questo poteva farlo tutte le volte che gli avessimo chiesto. Il
+problema non era convincerlo a lavorare di più; bisognava soltanto trovare il modo di dirgli che, dopo aver eseguito
+un'istruzione, avrebbe dovuto ricominciare.
+
+Rossi Brunori tornò davanti alla tastiera. $\text{\textgreek{«}}$Guardiamo il programma come lo guarda lui. Parte dalla
+linea dieci, legge PRINT {\textquotedbl}CIAO{\textquotedbl}, esegue l'istruzione e poi cerca quella successiva. Che
+cosa trova?$\text{\textgreek{»}}$
+
+Dopo qualche esitazione qualcuno rispose: $\text{\textgreek{«}}$Niente.$\text{\textgreek{»}}$
+
+$\text{\textgreek{«}}$Esatto. E allora si ferma. Non perché sia stanco, non perché ritenga che un saluto sia sufficiente
+e nemmeno perché abbia deciso che il programma è finito. Si ferma perché noi non gli abbiamo dato altro da
+fare.$\text{\textgreek{»}}$
+
+Questa distinzione, così semplice da sembrare quasi ovvia una volta pronunciata, conteneva qualcosa che avrei incontrato
+infinite volte negli anni successivi: il computer non completa i nostri pensieri. Arriva esattamente fino al punto in
+cui arrivano le istruzioni e non un passo oltre. Se volevamo che il programma ricominciasse, dovevamo essere noi a
+indicargli dove tornare.
+
+Sul monitor comparve una seconda riga:
+
+20 GOTO 10
+
+Il professore non ne spiegò immediatamente il significato. Lasciò che la osservassimo e ci chiese di provare a
+interpretarla. Qualcuno pronunciò GOTO come un'unica parola, finché Rossi Brunori non la separò lentamente in GO e TO:
+vai a. A quel punto il numero dieci che seguiva smise di essere un dettaglio e diventò la destinazione dell'istruzione.
+Alla linea venti stavamo dicendo al Commodore di tornare alla linea dieci.
+
+Adesso il programma era formato da appena due righe:
+
+10 PRINT {\textquotedbl}CIAO{\textquotedbl}
+
+20 GOTO 10
+
+Rossi Brunori seguì con un dito il percorso delle istruzioni: linea dieci, poi linea venti, di nuovo linea dieci, ancora
+la venti. Continuò a ripetere quella sequenza con calma, quasi volesse costringerci a vedere il programma muoversi
+prima ancora di eseguirlo, finché un ragazzo lo interruppe con una constatazione che sembrò arrivargli improvvisamente:
+$\text{\textgreek{«}}$Ma allora non finisce più.$\text{\textgreek{»}}$
+
+Il professore si fermò e lo guardò con un'espressione soddisfatta. $\text{\textgreek{«}}$Esatto.$\text{\textgreek{»}}$
+
+Per qualche secondo non disse altro. Aveva ottenuto ciò che cercava: la conclusione non era arrivata da una definizione
+scritta alla lavagna, ma dal tentativo di seguire mentalmente il comportamento del programma. Senza conoscerne ancora
+il nome avevamo appena incontrato uno dei concetti fondamentali della programmazione, quello che oggi chiameremmo senza
+esitazione un ciclo. Allora, per comprenderlo, ci erano bastate due righe e il percorso immaginario tracciato da un
+dito davanti allo schermo.
+
+Prima di eseguire il programma Rossi Brunori, però, introdusse un'altra domanda. Fino a quel momento avevamo cercato il
+modo di convincere il computer a continuare; adesso che sembravamo esserci riusciti, bisognava domandarsi come avremmo
+fatto a fermarlo. Era una caratteristica del suo modo di insegnare che avrei imparato a riconoscere: una soluzione
+raramente chiudeva un argomento. Più spesso apriva la porta al problema successivo.
+
+$\text{\textgreek{«}}$Vediamo prima se abbiamo ragionato bene$\text{\textgreek{»}}$, disse tornando alla tastiera.
+
+Digitò RUN e premette RETURN.
+
+Questa volta il risultato non ebbe nulla della quiete della prima lezione. La parola CIAO comparve una volta, poi una
+seconda, poi ancora, e in pochi istanti cominciò a riempire il monitor con una velocità che nessuno di noi si
+aspettava. Le righe scorrevano verso l'alto mentre il Commodore continuava a eseguire le due istruzioni senza
+esitazione, trasformando quel semplicissimo saluto in una cascata di testo che sembrava non voler terminare.
+
+Nell'aula si levò un brusio divertito. Qualcuno rise, altri si sporsero leggermente in avanti per osservare meglio lo
+schermo. Io continuavo a guardare quelle parole moltiplicarsi e pensavo alla differenza enorme che poteva produrre una
+sola riga aggiunta al programma. Una settimana prima mi era sembrato straordinario ottenere un CIAO; adesso, con un
+GOTO, ne avevamo creati così tanti da non riuscire più a contarli.
+
+Rossi Brunori lasciò che il programma continuasse ancora per qualche secondo, abbastanza a lungo da farci capire che il
+Commodore non avrebbe preso spontaneamente alcuna decisione. Poi allungò una mano verso la tastiera e premette
+RUN/STOP. Il flusso si interruppe immediatamente e, dopo tutto quel movimento, lo schermo immobile produsse quasi la
+sensazione di un silenzio improvviso.
+
+Il professore indicò il tasto appena utilizzato e ci spiegò che non era importante soltanto sapere come interrompere un
+programma. Quell'esperimento mostrava qualcosa di più generale: se impartiamo a un computer un'istruzione che lo porta
+a ripetere la stessa operazione, la macchina continuerà a farlo finché le istruzioni non prevederanno una via d'uscita
+o qualcuno non interverrà dall'esterno. Non si fermerà perché pensa di aver lavorato abbastanza, non si accorgerà che
+il risultato è diventato inutile e non proverà a interpretare ciò che avremmo preferito ottenere.
+
+Poi guardò lo schermo ancora pieno di CIAO e sorrise. $\text{\textgreek{«}}$Per questo, quando un programma fa qualcosa
+che non vi aspettavate, prima di prendervela con il computer conviene guardare quello che avete scritto. Molto spesso
+da qualche parte c'è un errore di sbaglio.$\text{\textgreek{»}}$
+
+Ormai quella strana espressione non ci sorprese come la prima volta. Stava già diventando parte del lessico del corso,
+ma dietro il sorriso con cui la accoglievamo cominciava a formarsi un'idea molto meno scherzosa: un errore non era la
+dimostrazione che il computer non funzionava e nemmeno qualcosa di cui vergognarsi. Era una differenza tra ciò che
+avevamo immaginato e ciò che avevamo realmente scritto, e proprio quella differenza poteva insegnarci qualcosa.
+
+Negli anni successivi avrei trascorso migliaia di ore davanti a programmi che facevano esattamente ciò che avevo scritto
+e, proprio per questo, qualcosa di diverso da ciò che avevo intenzione di ottenere. Avrei imparato altri linguaggi,
+lavorato con macchine infinitamente più potenti e incontrato errori molto più difficili da individuare di un GOTO che
+tornava alla linea sbagliata. Eppure il principio non sarebbe cambiato: prima di sospettare della macchina, bisognava
+tornare alle istruzioni.
+
+Uscendo dall'aula quel pomeriggio non avrei saputo formulare una considerazione così precisa. Sapevo soltanto che due
+righe di BASIC erano riuscite a trasformare un singolo saluto in qualcosa che sembrava non avere fine e che, per la
+seconda volta in due lezioni, ero entrato con una domanda e ne uscivo con altre ancora. Invece di scoraggiarmi, quella
+sensazione mi attirava sempre di più.
+
+Il Commodore continuava a sembrarmi una macchina straordinaria, ma cominciavo lentamente a capire che la parte davvero
+interessante non era ciò che sapeva fare da solo. Era ciò che potevamo imparare a chiedergli.
+
+
+\bigskip
+\end{document}
