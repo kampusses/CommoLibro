@@ -1,0 +1,62 @@
+10 rem ================================
+20 rem m01 - compare l'automobile
+30 rem sprite multicolor giocatore
+40 rem ================================
+50 rem
+60 rem pulisce lo schermo
+70 print chr$(147)
+80 rem bordo nero
+90 poke 53280,0
+100 rem sfondo grigio chiaro
+110 poke 53281,15
+120 rem
+130 rem carica i 63 byte dello sprite
+140 rem a partire da $0340 = 832
+150 for i=0 to 62
+160 read a
+170 poke 832+i,a
+180 next i
+190 rem
+200 rem blocco sprite: 832/64 = 13
+210 rem puntatore sprite 0 = 2040
+220 poke 2040,13
+230 rem
+240 rem posizione iniziale
+250 poke 53248,172
+260 poke 53249,120
+270 rem
+280 rem azzera il nono bit della x
+290 poke 53264,0
+300 rem
+310 rem nessun ingrandimento
+320 poke 53271,0
+330 poke 53277,0
+340 rem
+350 rem sprite 0 in multicolor
+360 poke 53276,1
+370 rem
+380 rem multicolor 1 = bianco
+390 poke 53285,1
+400 rem multicolor 2 = nero
+410 poke 53286,0
+420 rem colore sprite 0 = rosso
+430 poke 53287,2
+440 rem
+450 rem abilita lo sprite 0
+460 poke 53269,1
+470 rem
+480 rem ===============================
+490 rem dati grafici dello sprite
+500 rem 21 righe x 3 byte = 63 byte
+510 rem ===============================
+520 data   0,   0,   0,   0,   0,   0
+530 data   3, 255, 192,   0, 170,   0
+540 data   0,  40,   0,   1, 170,  64
+550 data   3, 150, 192,   3, 150, 192
+560 data   3, 150, 192,   0, 150,   0
+570 data   0, 150,   0,   0, 170,   0
+580 data   0, 190,   0,   5, 186,  80
+590 data  15, 190, 240,  15, 170, 240
+600 data  15, 255, 240,   2, 170, 128
+610 data   2, 170, 128,   0,   0,   0
+620 data   0,   0,   0
