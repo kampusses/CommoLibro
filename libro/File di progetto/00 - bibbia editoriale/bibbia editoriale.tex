@@ -5,8 +5,8 @@
 \usepackage[LGR,T1]{fontenc}
 \usepackage[greek,italian]{babel}
 \usepackage[style=numeric,backend=biber]{biblatex}
-\author{HP}
-\date{2026-07-25}
+\author{utente}
+\date{2026-08-18}
 \begin{document}
 \section[Parte I – Visione dell{}'opera]{Parte I – Visione dell'opera}
 \subsection{1.1 Scopo della Bibbia editoriale}
@@ -1188,13 +1188,41 @@ più complessi senza salti logici.
 \subsection{12.4 Il codice deve essere eseguibile}
 Ogni listato pubblicato dovrà essere completo, corretto e realmente funzionante.
 
-Ogni listato dovrà essere verificato nella forma in cui viene pubblicato, affinché il codice riportato nel libro
-coincida con quello realmente utilizzato durante lo sviluppo del videogioco.
-
-Il lettore dovrà poterlo digitare, comprenderlo ed eseguirlo senza dover ricostruire parti mancanti o correggere errori
+Ogni listato dovrà essere verificato nella forma esatta in cui viene pubblicato, affinché il codice riportato nel libro
+coincida con quello realmente utilizzato durante lo sviluppo del videogioco. Il lettore dovrà poterlo digitare,
+comprenderlo ed eseguire senza dover ricostruire parti mancanti, interpretare passaggi sottintesi o correggere errori
 presenti nel testo.
 
-Eventuali semplificazioni dovranno essere chiaramente dichiarate.
+Il codice dovrà essere scritto pensando anche alla sua leggibilità sul Commodore 64 reale. Nei listati BASIC si cercherà
+pertanto, quando tecnicamente possibile, di non superare i 39 caratteri per riga, comprendendo nel conteggio il numero
+di riga e lo spazio che lo segue. Questa scelta consente di mantenere ordinata la visualizzazione tramite LIST,
+evitando che una riga occupi interamente le 40 colonne dello schermo o venga spezzata sulla riga fisica successiva.
+
+Il limite delle 39 colonne non dovrà tuttavia essere applicato in modo meccanico. Se il suo rispetto rendesse
+un'istruzione meno comprensibile, imponesse abbreviazioni ambigue o producesse codice artificiosamente frammentato, la
+chiarezza avrà la precedenza sulla compattezza.
+
+I commenti presenti nei listati dovranno essere brevi, pertinenti e realmente utili alla comprensione del codice. Non
+dovranno limitarsi a ripetere in linguaggio naturale ciò che l'istruzione rende già evidente, ma chiarire il
+significato di registri, valori, scelte progettuali o passaggi che non risultino immediatamente leggibili dal sorgente.
+
+Quando una sequenza di DATA contiene valori numerici di ampiezza differente, questi verranno, per quanto possibile,
+allineati in colonne regolari. Nel caso dei byte, i valori potranno essere allineati a destra su tre posizioni, così da
+rendere più semplice la lettura, il confronto tra righe e l'individuazione di eventuali errori durante la digitazione.
+
+La disposizione dei listati dovrà riflettere il modo in cui il codice viene effettivamente letto sulla macchina.
+Separazioni, righe di commento, gruppi di istruzioni e numerazione dovranno quindi favorire la scansione visiva del
+programma anche attraverso il comando LIST, senza introdurre spaziature decorative che sullo schermo del C64 producano
+effetti indesiderati.
+
+Quando il comportamento del programma dipende dallo stato di registri hardware modificabili da precedenti esecuzioni o
+esperimenti, il listato dovrà inizializzare esplicitamente almeno quelli necessari a garantire un risultato
+deterministico. Un programma pubblicato nel libro non dovrà funzionare soltanto nelle condizioni ideali successive
+all'accensione della macchina, ma dovrà partire da uno stato sufficientemente noto per riprodurre il comportamento
+descritto.
+
+Eventuali semplificazioni, omissioni intenzionali o compromessi introdotti per ragioni didattiche dovranno essere
+chiaramente dichiarati.
 
 \subsection{12.5 Commentare con misura}
 I commenti inseriti nel codice dovranno spiegare le decisioni progettuali e gli aspetti non immediatamente evidenti.
