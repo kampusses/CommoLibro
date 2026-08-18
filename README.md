@@ -5,8 +5,8 @@ MILESTONE CORRENTE: M01
 LINGUAGGIO: BASIC V2
 
 STATO:  
-M01 – compare l'automobile         - IN SVILUPPO  
-M02 – movimento con joystick  
+M01 – compare l'automobile           - OK  
+M02 – movimento con joystick         - IN SVILUPPO  
 M03 – limiti dell'area di gioco  
 M04 – primo avversario  
 M05 – movimento dell'avversario  
