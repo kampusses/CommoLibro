@@ -1,0 +1,78 @@
+10 rem ===============================
+20 rem m02 - movimento del giocatore
+30 rem coordinata x a 9 bit
+40 rem ===============================
+50 rem
+60 rem pulisce lo schermo
+70 print chr$(147)
+80 rem bordo nero
+90 poke 53280,0
+100 rem sfondo grigio chiaro
+110 poke 53281,15
+120 rem
+130 rem carica i 63 byte dello sprite
+140 rem a partire da $0340 = 832
+150 for i=0 to 62
+160 read a
+170 poke 832+i,a
+180 next i
+190 rem
+200 rem blocco sprite: 832/64 = 13
+210 rem puntatore sprite 0 = 2040
+220 poke 2040,13
+230 rem
+240 rem posizione iniziale
+250 x=172
+260 poke 53249,120
+270 gosub 600
+280 rem
+290 rem nessun ingrandimento
+300 poke 53271,0
+310 poke 53277,0
+320 rem
+330 rem sprite 0 in multicolor
+340 poke 53276,1
+350 rem
+360 rem multicolor 1 = bianco
+370 poke 53285,1
+380 rem multicolor 2 = nero
+390 poke 53286,0
+400 rem colore sprite 0 = rosso
+410 poke 53287,2
+420 rem
+430 rem abilita lo sprite 0
+440 poke 53269,1
+450 rem
+460 rem ciclo principale
+470 k=peek(197)
+480 if k=10 then x=x-1
+490 if k=18 then x=x+1
+500 if x<24 then x=24
+510 if x>320 then x=320
+520 gosub 600
+530 goto 470
+540 rem
+550 rem aggiorna la coordinata x
+560 rem
+600 h=int(x/256)
+610 l=x-256*h
+620 poke 53248,l
+630 m=peek(53264) and 254
+640 poke 53264,m+h
+650 return
+660 rem
+670 rem ===============================
+680 rem dati grafici dello sprite
+690 rem 21 righe x 3 byte = 63 byte
+700 rem ===============================
+710 data   0,   0,   0,   0,   0,   0
+720 data   3, 255, 192,   0, 170,   0
+730 data   0,  40,   0,   1, 170,  64
+740 data   3, 150, 192,   3, 150, 192
+750 data   3, 150, 192,   0, 150,   0
+760 data   0, 150,   0,   0, 170,   0
+770 data   0, 190,   0,   5, 186,  80
+780 data  15, 190, 240,  15, 170, 240
+790 data  15, 255, 240,   2, 170, 128
+800 data   2, 170, 128,   0,   0,   0
+810 data   0,   0,   0
