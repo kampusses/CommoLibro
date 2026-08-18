@@ -13,9 +13,8 @@ Alla fine del passaggio precedente avevamo ottenuto qualcosa che, fino a quel mo
 nostra immaginazione: l$\text{\textgreek{’}}$automobile era comparsa sullo schermo.
 
 Era ancora poca cosa rispetto al gioco che avevamo in mente. Non c$\text{\textgreek{’}}$era una strada, non esistevano
-avversari, non c$\text{\textgreek{’}}$erano ostacoli né punteggio. E soprattutto quella piccola automobile rossa
-rimaneva perfettamente immobile, quasi fosse stata parcheggiata al centro del monitor in attesa che decidessimo che
-cosa farne.
+avversari, non avevamo ostacoli, punteggio o suoni. E soprattutto quella piccola automobile rossa rimaneva
+perfettamente immobile, quasi fosse stata parcheggiata al centro del monitor in attesa che decidessimo che cosa farne.
 
 Eppure il risultato aveva già un significato preciso. Avevamo trasformato un disegno in 63 byte, collocato quei byte in
 memoria, configurato il VIC-II e ottenuto finalmente qualcosa di visibile. Per la prima volta il progetto aveva assunto
@@ -25,55 +24,60 @@ Adesso dovevamo compiere un passo molto più importante.
 
 Dovevamo permettere al giocatore di intervenire.
 
-Un videogioco, infatti, non nasce nel momento in cui compare qualcosa sullo schermo. Comincia veramente a prendere vita
+Un videogioco, infatti, non nasce nel momento in cui compare qualcosa sullo schermo. Comincia davvero a prendere vita
 quando ciò che vediamo reagisce alle nostre azioni. Da quel momento non osserviamo più soltanto il risultato di un
 programma: entriamo nel programma, anche se indirettamente, e cominciamo a modificarne continuamente lo stato.
 
-La domanda per questa nuova fase è quindi molto semplice da formulare:
+La domanda per questa nuova fase è quindi semplice da formulare:
 
 come facciamo a spostare l$\text{\textgreek{’}}$automobile verso destra e verso sinistra?
 
 La risposta ci porterà molto più lontano di quanto potrebbe sembrare.
 
 \subsection{Una posizione che deve poter cambiare}
-Nella M01 avevamo stabilito la posizione iniziale dello sprite con due istruzioni molto semplici:
+Nella M01 avevamo stabilito la posizione iniziale dello sprite scrivendo direttamente le coordinate nei registri del
+VIC-II:
 
 poke 53248,172
 
 poke 53249,120
 
-Il primo valore determinava la posizione orizzontale, il secondo quella verticale. Il VIC-II riceveva quei numeri e
-collocava lo sprite nel punto corrispondente. Per un$\text{\textgreek{’}}$automobile immobile non avevamo bisogno di
-altro.
+Il primo valore determinava la posizione orizzontale, il secondo quella verticale. Per
+un$\text{\textgreek{’}}$automobile immobile non avevamo bisogno di altro.
 
-Adesso, però, il valore 172 non può più essere inciso nel programma come qualcosa di immutabile.
+Adesso, però, il valore 172 non può più rimanere semplicemente incorporato in un$\text{\textgreek{’}}$istruzione.
 
 Se il giocatore si sposta verso sinistra, la posizione dovrà diminuire. Se si muove verso destra, dovrà aumentare.
 Qualche istante dopo potrebbe cambiare ancora.
 
-Abbiamo quindi bisogno di conservare quella posizione in un elemento che, durante l$\text{\textgreek{’}}$esecuzione del
-programma, possa assumere valori differenti.
+Abbiamo quindi bisogno di conservare quella posizione in qualcosa che possa assumere valori differenti durante
+l$\text{\textgreek{’}}$esecuzione del programma.
 
-Il BASIC mette a disposizione esattamente questo strumento: la variabile.
+È precisamente il compito di una variabile.
 
-La nostra posizione iniziale diventa:
+La nuova inizializzazione comincia così:
+
+240 rem posizione e limiti laterali
 
 250 x=172:h=0:oh=0
 
-Per il momento concentriamoci soltanto sulla prima parte:
+260 xl=24:xr=320
+
+Per il momento concentriamoci sulla prima assegnazione:
 
 x=172
 
-Abbiamo chiamato X la variabile che rappresenterà la posizione orizzontale dell$\text{\textgreek{’}}$automobile.
+Abbiamo scelto X come nome della variabile che rappresenterà la posizione orizzontale
+dell$\text{\textgreek{’}}$automobile.
 
-Una variabile può essere immaginata come un piccolo contenitore al quale assegniamo un nome. Dentro quel contenitore il
-programma conserva un valore e, quando ne ha bisogno, può leggerlo oppure sostituirlo con uno nuovo.
+Una variabile può essere immaginata come un contenitore identificato da un nome. Il programma può memorizzarvi un
+valore, leggerlo quando ne ha bisogno e, soprattutto, sostituirlo con un valore differente.
 
-All$\text{\textgreek{’}}$inizio:
+All$\text{\textgreek{’}}$inizio abbiamo:
 
 X = 172
 
-ma durante il gioco potremmo avere:
+ma durante il gioco potremmo ottenere:
 
 X = 175
 
@@ -85,199 +89,206 @@ e successivamente tornare a:
 
 X = 175
 
-La differenza rispetto alla M01 è quindi sostanziale. Prima la posizione apparteneva direttamente
+La differenza rispetto alla M01 è sostanziale. Prima la posizione apparteneva direttamente
 all$\text{\textgreek{’}}$istruzione POKE; adesso appartiene allo stato del nostro programma.
 
-Il VIC-II continuerà naturalmente ad avere bisogno del valore nei propri registri, ma sarà il BASIC a conservarne la
-versione corrente e a decidere quando modificarla.
+Il VIC-II continuerà naturalmente ad avere bisogno della coordinata nei propri registri, ma sarà il BASIC a conservarne
+il valore corrente e a decidere quando modificarlo.
 
-Nella stessa riga abbiamo inizializzato altre due variabili:
+Nella stessa riga inizializziamo altre due variabili:
 
 h=0:oh=0
 
-Il carattere : permette di scrivere più istruzioni BASIC sulla stessa riga. Il Commodore le esegue
-nell$\text{\textgreek{’}}$ordine in cui le incontra, come se fossero state collocate su righe separate.
+Il carattere : permette di scrivere più istruzioni BASIC sulla stessa riga. Il Commodore le eseguirà
+nell$\text{\textgreek{’}}$ordine in cui le incontra, come se fossero state distribuite su linee separate.
 
-Per ora ci basta sapere che H e OH partono entrambe da zero. Il motivo della loro esistenza diventerà chiaro tra poco,
-quando scopriremo che la coordinata orizzontale di uno sprite presenta un problema che la sola variabile X riesce a
-nascondere molto bene.
+Il significato di H e OH diventerà chiaro tra poco, quando scopriremo che la coordinata orizzontale di uno sprite
+possiede una particolarità che la nostra variabile X, almeno per il momento, riesce a nasconderci molto bene.
 
-La posizione verticale, invece, non cambia ancora:
+La riga successiva introduce invece altre due variabili:
 
-260 poke 53248,x
+xl=24:xr=320
 
-270 poke 53249,120
+I nomi sono stati scelti per ricordarne facilmente il significato: possiamo leggere XL come X Left, il limite sinistro,
+e XR come X Right, il limite destro.
 
-Scriviamo quindi la posizione iniziale X nel registro orizzontale dello sprite 0 e continuiamo a mantenere Y uguale a
-120.
+Stiamo quindi dichiarando fin dall$\text{\textgreek{’}}$inizio che l$\text{\textgreek{’}}$automobile potrà muoversi
+nell$\text{\textgreek{’}}$intervallo compreso tra 24 e 320.
 
-Il nostro obiettivo, in questa fase, non è ancora guidare liberamente l$\text{\textgreek{’}}$automobile in ogni
-direzione. Vogliamo risolvere un problema alla volta e quindi ci concentreremo sul movimento laterale.
+Avremmo potuto inserire questi due numeri direttamente più avanti, dentro le istruzioni che controllano il movimento. Il
+programma avrebbe funzionato allo stesso modo. Tenerli invece insieme alla configurazione iniziale ci offre un
+vantaggio importante: stiamo separando la regola dai valori che la configurano.
+
+Oggi i nostri limiti sono 24 e 320. Quando costruiremo davvero la strada potremmo scoprire che la carreggiata deve
+essere più stretta. In quel caso sarà sufficiente cambiare:
+
+xl=24:xr=320
+
+senza cercare all$\text{\textgreek{’}}$interno del ciclo principale tutte le istruzioni nelle quali quei numeri sono
+stati utilizzati.
+
+È una scelta semplice, ma introduce già un$\text{\textgreek{’}}$abitudine utile: quando un valore rappresenta una
+caratteristica del gioco destinata potenzialmente a cambiare, conservarlo in una variabile rende il programma più
+leggibile e più facile da modificare.
+
+Vale la pena ricordare anche una particolarità del BASIC V2: nei nomi delle variabili sono significativi soltanto i
+primi due caratteri. XL e XR sono quindi perfettamente distinti, mentre nomi più lunghi che iniziassero con le stesse
+due lettere verrebbero considerati equivalenti. È uno dei limiti del linguaggio con cui dovremo imparare a convivere
+scegliendo nomi brevi, ma sufficientemente riconoscibili.
+
+Definite posizione e limiti, possiamo inizializzare realmente lo sprite:
+
+270 poke 53248,x
+
+280 poke 53249,120
+
+290 m=peek(53264)and254
+
+300 poke 53264,m
+
+La coordinata verticale rimane ancora fissa a 120. In questa fase vogliamo affrontare un problema alla volta e ci
+occuperemo esclusivamente del movimento laterale.
 
 \subsection{Un programma che non deve più finire}
 Finora il nostro listato era costituito soprattutto da una fase di preparazione. Puliva lo schermo, caricava i dati
 dello sprite, configurava il VIC-II e mostrava l$\text{\textgreek{’}}$automobile.
 
-Ma un programma interattivo non può limitarsi a fare tutto questo una sola volta.
+Un programma interattivo non può però limitarsi a fare tutto questo una sola volta.
 
-Deve continuare a chiedersi:
+Deve continuare a domandarsi se il giocatore stia facendo qualcosa, decidere se la posizione debba cambiare, aggiornare
+eventualmente lo sprite e poi ricominciare.
 
-il giocatore sta facendo qualcosa?
+Nasce così quella che nel listato abbiamo chiamato esplicitamente:
 
-Subito dopo:
+520 rem ciclo principale
 
-la posizione deve cambiare?
+Da questo punto il programma entra in una sequenza destinata a ripetersi continuamente:
 
-Poi:
+530 wait 53266,128
 
-devo aggiornare lo sprite?
+540 wait 53266,128,128
 
-E infine deve ricominciare da capo.
+550 k=peek(197)
 
-Nasce così quella che nel nostro listato abbiamo chiamato esplicitamente:
+560 if k=10 then x=x-s:goto 590
 
-510 rem ciclo principale
+570 if k=18 then x=x+s:goto 590
 
-Da questo punto in avanti il programma entra in una sequenza destinata a ripetersi continuamente:
+580 goto 530
 
-520 wait 53266,128
+Il GOTO non è un concetto completamente nuovo. Molti anni prima Rossi Brunori lo aveva utilizzato per mostrarci come
+costringere il Commodore a ripetere continuamente un semplice PRINT {\textquotedbl}CIAO{\textquotedbl}.
 
-530 wait 53266,128,128
+Allora avevamo scoperto che il computer non si stanca.
 
-540 k=peek(197)
+Adesso quella stessa proprietà assume un significato completamente diverso.
 
-550 if k=10 then x=x-s:goto 580
+Non vogliamo ripetere continuamente la stessa azione. Ogni volta che il ciclo ricomincia dobbiamo osservare ciò che sta
+accadendo e decidere quale comportamento adottare.
 
-560 if k=18 then x=x+s:goto 580
+Il nostro programma non deve quindi soltanto ripetersi.
 
-570 goto 520
-
-Il GOTO non è più una novità. Lo avevamo incontrato molto tempo prima, quando Rossi Brunori ci aveva mostrato come
-costringere il Commodore a ripetere senza stancarsi un semplice PRINT {\textquotedbl}CIAO{\textquotedbl}.
-
-Naturalmente allora non immaginavo che quella stessa idea sarebbe diventata, molti anni dopo, il cuore di un ciclo di
-gioco.
-
-La differenza è che questa volta non vogliamo ripetere sempre la stessa azione. Ogni passaggio attraverso il ciclo deve
-osservare ciò che sta accadendo e decidere che cosa fare.
-
-Il nostro programma non dovrà quindi limitarsi a ripetersi.
-
-Dovrà reagire.
+Deve reagire.
 
 \subsection{Prima di muoverci, decidiamo quando farlo}
-Le prime due istruzioni del ciclo possono apparire piuttosto enigmatiche:
+Le prime due istruzioni del ciclo possono sembrare piuttosto enigmatiche:
 
-520 wait 53266,128
+530 wait 53266,128
 
-530 wait 53266,128,128
+540 wait 53266,128,128
 
-È la prima volta che incontriamo WAIT, ed è anche il primo momento in cui il nostro gioco comincia a prestare attenzione
-non soltanto a che cosa deve fare, ma anche a quando farlo.
+È la prima volta che incontriamo WAIT ed è anche il primo momento in cui il nostro gioco comincia a preoccuparsi non
+soltanto di che cosa debba fare, ma anche di quando farlo.
 
-Per capirne il motivo dobbiamo conoscere, almeno superficialmente, qualcosa del modo in cui il Commodore costruisce
-l$\text{\textgreek{’}}$immagine che osserviamo.
+Per comprenderne il motivo dobbiamo affacciarci, senza ancora entrarvi troppo in profondità, sul funzionamento del
+sistema video.
 
-Il VIC-II non produce l$\text{\textgreek{’}}$intero schermo in un unico istante. L$\text{\textgreek{’}}$immagine viene
-generata progressivamente, linea dopo linea, seguendo il movimento del raster. Il registro situato
-all$\text{\textgreek{’}}$indirizzo 53266, cioè \$D012, permette in lettura di conoscere gli otto bit meno significativi
-della posizione raster corrente. 
+Il VIC-II non costruisce l$\text{\textgreek{’}}$intera immagine che vediamo sul monitor nello stesso istante. Procede
+progressivamente, linea dopo linea. Possiamo immaginare una sorta di scansione che attraversa continuamente lo schermo
+e che prende il nome di raster.
 
-Non abbiamo ancora bisogno di addentrarci nella programmazione raster vera e propria. Più avanti il progetto ci darà
-motivi molto migliori per farlo. In questo momento ci interessa soltanto una conseguenza: il movimento del raster ci
-fornisce un evento video che si ripete con regolarità e che possiamo utilizzare come riferimento temporale.
+L$\text{\textgreek{’}}$indirizzo 53266 ci permette di osservare una parte della posizione corrente di questa scansione.
 
-Ed è precisamente ciò che fa WAIT.
+Non abbiamo ancora bisogno di studiare dettagliatamente il raster. Lo faremo quando il gioco ci presenterà problemi per
+i quali sarà realmente necessario comprenderlo meglio. Per ora ci interessa soltanto una proprietà: il suo movimento ci
+offre un riferimento che si ripete regolarmente.
 
-La forma generale dell$\text{\textgreek{’}}$istruzione è:
+Ed è proprio quello che utilizziamo con WAIT.
+
+La forma più semplice dell$\text{\textgreek{’}}$istruzione è:
 
 wait indirizzo,maschera
 
-oppure, quando serve:
+WAIT sospende l$\text{\textgreek{’}}$esecuzione del BASIC finché i bit che ci interessano nella locazione indicata non
+raggiungono una determinata condizione.
 
-wait indirizzo,maschera,seconda-maschera
+Nel nostro caso utilizziamo come maschera il numero 128.
 
-WAIT sospende l$\text{\textgreek{’}}$esecuzione del programma finché i bit della locazione osservata non soddisfano la
-condizione richiesta. È quindi molto diversa da una normale istruzione BASIC: il programma arriva a quella riga e, se
-la condizione non è ancora verificata, rimane lì ad aspettare. Il Programmer$\text{\textgreek{’}}$s Reference Guide la
-descrive proprio come un modo per sospendere l$\text{\textgreek{’}}$esecuzione fino al verificarsi di una determinata
-configurazione di bit. 
+In binario:
 
-Nel nostro caso la maschera è 128.
+128 = 10000000
 
-Scritta in binario, 128 diventa:
+Stiamo quindi osservando il bit 7.
 
-10000000
-
-Stiamo quindi osservando il bit 7 del registro raster.
-
-La prima istruzione:
+Con:
 
 wait 53266,128
 
-attende che quel bit diventi 1.
+aspettiamo che quel bit diventi 1.
 
 Subito dopo:
 
 wait 53266,128,128
 
-attende la condizione opposta, cioè il ritorno del bit a zero.
+utilizziamo il terzo parametro di WAIT per attendere la condizione opposta, cioè il ritorno dello stesso bit a zero.
 
-La coppia delle due WAIT ci fornisce così un punto di sincronizzazione ricorrente con il video. Invece di lasciare che
-il ciclo del BASIC aggiorni l$\text{\textgreek{’}}$automobile semplicemente ogni volta che riesce a completare tutte le
-istruzioni, facciamo in modo che ogni nuovo passaggio venga agganciato al ritmo con cui il VIC-II sta generando
-l$\text{\textgreek{’}}$immagine.
+La coppia di istruzioni crea per noi un punto di sincronizzazione che si presenta una volta per ciascun ciclo completo
+del video. Possiamo quindi utilizzarlo come una sorta di metronomo.
 
-Per ora ci basta questo.
+Il ciclo non aggiornerà l$\text{\textgreek{’}}$automobile semplicemente ogni volta che il BASIC riesce a completare
+tutte le istruzioni. Prima aspetterà il riferimento video che abbiamo scelto.
 
-Non abbiamo ancora imparato a dominare il raster e non stiamo utilizzando interrupt o altre tecniche più sofisticate. Lo
-stiamo semplicemente osservando, quasi fosse il metronomo al quale iniziamo ad affidare il ritmo del nostro gioco.
+È ancora una tecnica molto elementare. Non stiamo utilizzando interrupt, non stiamo controllando con precisione ogni
+linea raster e non pretendiamo ancora di sincronizzare il gioco come farebbe un programma interamente scritto in
+linguaggio macchina.
 
-Più avanti torneremo su questa idea.
+Abbiamo semplicemente iniziato a far sì che il nostro programma ascolti anche il ritmo della macchina sulla quale viene
+eseguito.
 
-\subsection{Come facciamo a sapere che cosa vuole il giocatore?}
-Dopo aver atteso il momento previsto dal nostro ciclo troviamo:
+\subsection{PEEK: questa volta vogliamo leggere}
+Dopo aver atteso il momento previsto dal ciclo troviamo:
 
-540 k=peek(197)
+550 k=peek(197)
 
-Qui incontriamo un nuovo comando che, in un certo senso, è il contrario di uno strumento che conosciamo già.
+Qui incontriamo un$\text{\textgreek{’}}$istruzione che svolge, in un certo senso, l$\text{\textgreek{’}}$operazione
+opposta rispetto a uno strumento che abbiamo già utilizzato molte volte.
 
-Finora abbiamo usato molte volte POKE.
-
-Con:
+Con POKE scriviamo:
 
 poke indirizzo,valore
 
-scriviamo qualcosa in una locazione di memoria.
-
-Con PEEK, invece, facciamo l$\text{\textgreek{’}}$operazione opposta:
+Con PEEK, invece, leggiamo il contenuto di una locazione di memoria:
 
 peek(indirizzo)
 
-leggiamo ciò che si trova in quella locazione.
-
-Nel nostro programma:
+La nostra istruzione:
 
 k=peek(197)
 
-significa quindi:
+può quindi essere letta così:
 
-leggi il contenuto della locazione 197 e conservalo nella variabile K.
+leggi il valore contenuto nella locazione 197 e conservalo nella variabile K.
 
-La locazione 197, \$00C5, viene utilizzata dal sistema per conservare il codice associato al tasto che in quel momento
-risulta premuto; quando nessun tasto è premuto restituisce il valore 64. 
+La locazione 197 viene utilizzata dal sistema per registrare il codice associato alla tastiera. Il nostro programma può
+quindi osservare quel valore per capire se il giocatore sta premendo uno dei comandi che abbiamo deciso di utilizzare.
 
-Possiamo quindi immaginare il percorso in questo modo:
+Il percorso concettuale è questo:
 
 giocatore
 
 \ \ \ \ ↓
 
 tastiera
-
-\ \ \ \ ↓
-
-scansione della tastiera
 
 \ \ \ \ ↓
 
@@ -291,37 +302,39 @@ PEEK(197)
 
 variabile K
 
-Il BASIC non deve conoscere il significato della nostra intenzione. Non sa che vogliamo andare a destra o a sinistra.
-Riceve semplicemente un numero e saremo noi a decidere quale significato attribuirgli.
+Il Commodore non sa che stiamo cercando di guidare un$\text{\textgreek{’}}$automobile.
 
-Nel nostro programma ci interessano due valori: 10 e 18.
+Per lui esistono soltanto numeri.
 
-Per questo le righe successive sono:
+Saremo noi ad attribuire a quei numeri un significato.
 
-550 if k=10 then x=x-s:goto 580
+\subsection{IF: il programma comincia a decidere}
+Subito dopo la lettura troviamo:
 
-560 if k=18 then x=x+s:goto 580
+560 if k=10 then x=x-s:goto 590
 
-Ed è qui che incontriamo uno dei costrutti più importanti di qualsiasi linguaggio di programmazione: la decisione.
+570 if k=18 then x=x+s:goto 590
 
-\subsection{IF: il programma può scegliere una strada}
-La parola inglese IF significa semplicemente se.
+IF introduce uno dei concetti fondamentali della programmazione: la possibilità di eseguire
+un$\text{\textgreek{’}}$istruzione soltanto quando una determinata condizione è vera.
 
-La struttura:
+La struttura generale è:
 
 if condizione then istruzione
 
-può quasi essere letta come una frase normale:
+e può essere letta quasi come una frase naturale:
 
-se questa condizione è vera, allora esegui questa istruzione.
+se questa condizione è vera, allora fai questo.
 
-Prendiamo la prima riga:
+Consideriamo:
 
-if k=10 then x=x-s:goto 580
+if k=10 then x=x-s:goto 590
 
-Il programma controlla se K vale 10.
+Il programma verifica innanzitutto:
 
-Se non è così, ciò che segue THEN non viene eseguito e il BASIC passa alla riga successiva.
+K = 10 ?
+
+Se la risposta è negativa, passa semplicemente alla riga successiva.
 
 Se invece la condizione è vera, esegue:
 
@@ -329,15 +342,16 @@ x=x-s
 
 e poi:
 
-goto 580
+goto 590
 
-Vale la pena soffermarsi anche sul simbolo = perché nella stessa riga sembra avere due ruoli differenti.
+È interessante osservare come il simbolo = assuma due significati leggermente diversi all$\text{\textgreek{’}}$interno
+della stessa istruzione.
 
 In:
 
 k=10
 
-all$\text{\textgreek{’}}$interno della condizione IF, stiamo chiedendo se K sia uguale a 10.
+stiamo verificando se K sia uguale a 10.
 
 In:
 
@@ -345,58 +359,59 @@ x=x-s
 
 stiamo invece assegnando a X un nuovo valore.
 
-Se, per esempio, X valesse 172 e S valesse 3:
+Se, per esempio:
 
-X = 172 - 3
+X = 172
 
-e quindi la nuova posizione diventerebbe:
+S = 3
+
+dopo:
+
+x=x-s
+
+avremo:
 
 X = 169
 
-La riga successiva compie l$\text{\textgreek{’}}$operazione opposta:
+La riga successiva effettua il movimento nella direzione opposta:
 
-if k=18 then x=x+s:goto 580
+if k=18 then x=x+s:goto 590
 
-Questa volta aggiungiamo S, spostando l$\text{\textgreek{’}}$automobile nella direzione contraria.
+Questa volta aggiungiamo S.
 
-Se nessuna delle due condizioni è verificata arriviamo invece a:
+Se nessuna delle due condizioni è verificata, arriviamo a:
 
-570 goto 520
+580 goto 530
 
 e torniamo direttamente all$\text{\textgreek{’}}$inizio del ciclo.
 
-Questo dettaglio è importante: se il giocatore non sta chiedendo alcuno spostamento, non eseguiamo tutta la parte del
-programma dedicata all$\text{\textgreek{’}}$aggiornamento della posizione.
+Questa scelta è importante. Se il giocatore non ha richiesto alcuno spostamento, non abbiamo motivo di ricalcolare e
+riscrivere la posizione dello sprite.
 
-Non c$\text{\textgreek{’}}$è nulla da aggiornare.
+Non è cambiato nulla.
 
-Torniamo ad aspettare il passaggio successivo.
+Il Commodore può quindi tornare ad aspettare il riferimento video successivo.
 
-È una prima, semplicissima forma di economia nell$\text{\textgreek{’}}$esecuzione: non chiediamo al Commodore di
-svolgere lavoro che non può produrre alcun risultato nuovo.
+È una delle prime piccole attenzioni alle prestazioni del nostro programma: non eseguire un lavoro quando sappiamo già
+che non produrrà alcun cambiamento.
 
-\subsection{Quanto deve muoversi?}
-Rimane da capire che cosa sia S.
+\subsection{Quanto deve spostarsi?}
+Poco prima del ciclo principale abbiamo inizializzato:
 
-Poco prima del ciclo principale abbiamo scritto:
+490 rem 3 pixel per fotogramma
 
-480 rem 3 pixel per fotogramma
+500 s=3
 
-490 s=3
+La variabile S rappresenta l$\text{\textgreek{’}}$entità dello spostamento applicato alla coordinata X ogni volta che il
+giocatore richiede un movimento.
 
-La variabile S rappresenta l$\text{\textgreek{’}}$entità dello spostamento orizzontale che applichiamo ad ogni
-aggiornamento.
+Questo semplice valore nasce in realtà da una scelta che merita di essere spiegata.
 
-Questa scelta merita più attenzione di quanto possa suggerire una semplice assegnazione.
+Lo spostamento ideale, dal punto di vista della continuità visiva, sarebbe di un solo pixel alla volta. In questo modo
+ogni nuova posizione dello sprite sarebbe adiacente alla precedente e il piccolo salto percepibile durante il movimento
+verrebbe ridotto al minimo.
 
-La soluzione apparentemente più naturale sarebbe:
-
-s=1
-
-Un solo pixel.
-
-Dal punto di vista della continuità visiva sarebbe la situazione ideale. Ogni nuova posizione dello sprite sarebbe
-immediatamente adiacente alla precedente:
+Avremmo, per esempio:
 
 172
 
@@ -410,19 +425,16 @@ immediatamente adiacente alla precedente:
 
 177
 
-Non salteremmo alcuna coordinata.
+Con il BASIC V2, tuttavia, questa scelta rende lo spostamento laterale dell$\text{\textgreek{’}}$automobile troppo lento
+per il tipo di gioco che stiamo costruendo.
 
-Provando però il movimento sul programma reale emerge un problema: con il BASIC V2 uno spostamento di un solo pixel per
-aggiornamento rende la risposta laterale dell$\text{\textgreek{’}}$automobile troppo lenta per il tipo di gioco
-d$\text{\textgreek{’}}$azione che stiamo cercando di costruire.
-
-Possiamo aumentare il valore.
+Aumentare l$\text{\textgreek{’}}$incremento rende invece la macchina più reattiva.
 
 Con:
 
 s=3
 
-la successione diventa invece:
+potremmo ottenere:
 
 172
 
@@ -434,269 +446,283 @@ la successione diventa invece:
 
 184
 
-La vettura percorre più spazio nello stesso numero di aggiornamenti e appare quindi molto più reattiva.
+L$\text{\textgreek{’}}$automobile percorre quindi una distanza maggiore nello stesso numero di aggiornamenti, ma tra una
+posizione e la successiva vengono saltate due coordinate.
 
-Paghiamo però un prezzo.
+Questo introduce inevitabilmente un piccolo compromesso visivo.
 
-Tra 172 e 175 esistono le coordinate 173 e 174, che non vengono mai mostrate. Lo sprite passa direttamente da una
-posizione all$\text{\textgreek{’}}$altra e questo introduce un piccolo salto visivo.
+La macchina reagisce più velocemente ai comandi, ma il movimento non possiede la continuità spaziale che otterremmo
+procedendo pixel per pixel.
 
-Abbiamo quindi davanti due esigenze contrastanti.
+Per il momento accettiamo quindi questo compromesso e utilizziamo uno spostamento di tre pixel.
 
-Uno spostamento di un pixel offre la migliore continuità, ma risulta troppo lento.
+Il lieve micro-scattare che ne deriva rimane consapevolmente come un limite della soluzione corrente. Più avanti, quando
+il gioco ci porterà ad affrontare l$\text{\textgreek{’}}$Assembly, potremo tornare sul problema disponendo di un
+controllo molto più preciso sui tempi di aggiornamento e sulla gestione del movimento.
 
-Uno spostamento maggiore rende il controllo più rapido, ma aumenta la distanza tra le posizioni successive e quindi la
-percezione di piccoli scatti.
+È importante sottolineare che non stiamo scegliendo tre perché sia un numero magicamente corretto.
 
-Per questa fase del progetto scegliamo consapevolmente tre pixel.
+Stiamo scegliendo il valore che, nelle nostre prove, rappresenta il miglior equilibrio tra due esigenze contrastanti:
+fluidità e reattività.
 
-Non perché siano la soluzione perfetta, ma perché rappresentano il compromesso che, nelle nostre prove, rende
-l$\text{\textgreek{’}}$automobile sufficientemente reattiva senza produrre salti eccessivi.
+Anche questo significa progettare.
 
-Il lieve micro-scattare che rimane è quindi un limite noto della soluzione attuale.
+Non sempre esiste una soluzione migliore in senso assoluto. Spesso esiste la soluzione più adatta agli strumenti e ai
+vincoli che abbiamo in quel momento.
 
-Non cercheremo di nasconderlo e soprattutto non stravolgeremo il programma pur di eliminarlo adesso.
+\subsection{Due limiti che adesso hanno un nome}
+Una volta modificata la posizione dobbiamo assicurarci che l$\text{\textgreek{’}}$automobile rimanga
+nell$\text{\textgreek{’}}$intervallo che abbiamo deciso di utilizzare.
 
-Quando il progetto ci porterà ad affrontare l$\text{\textgreek{’}}$Assembly, potremo tornare esattamente su questo
-punto. Lavorando più vicino alla macchina avremo un controllo molto maggiore sui tempi di esecuzione e potremo tentare
-di ottenere movimenti di un solo pixel mantenendo una velocità adeguata al gioco.
+Nella parte iniziale del programma avevamo scritto:
 
-È una scelta importante anche dal punto di vista del metodo. Programmare non significa sempre trovare una soluzione
-priva di difetti. Molto spesso significa capire quali compromessi possiamo accettare adesso, sapendo che alcuni di essi
-potranno essere rivisti quando disporremo di strumenti migliori.
+260 xl=24:xr=320
 
-Rossi Brunori non parlava certo di frame rate o di ottimizzazione del movimento quando ci insegnava il BASIC. Eppure mi
-torna spesso in mente il modo con cui ci invitava a guardare ciò che la macchina faceva davvero, invece di ciò che
-avremmo voluto che facesse. Anche qui il principio è lo stesso: possiamo desiderare un movimento perfettamente fluido,
-ma prima dobbiamo osservare il risultato reale e accettare ciò che il nostro programma, in questa fase, riesce
-concretamente a ottenere.
+Possiamo quindi esprimere il controllo senza inserire nuovamente i due valori numerici:
 
-\subsection{L$\text{\textgreek{’}}$automobile deve avere dei confini}
-Una volta modificato X, dobbiamo impedirle di raggiungere posizioni che non vogliamo utilizzare.
+590 if x{\textless}xl then x=xl
 
-Le righe:
+600 if x{\textgreater}xr then x=xr
 
-580 if x{\textless}24 then x=24
+La prima istruzione significa:
 
-590 if x{\textgreater}320 then x=320
+se X è diventata più piccola del limite sinistro XL, riportala esattamente a XL.
 
-costruiscono due limiti.
+La seconda compie l$\text{\textgreek{’}}$operazione opposta:
 
-Se continuiamo a spostarci verso sinistra e X scende sotto 24, il programma la riporta immediatamente a 24.
+se X supera il limite destro XR, riportala a XR.
 
-Se invece superiamo 320, la posizione viene riportata a 320.
+Il nostro intervallo rimane quindi:
 
-La variabile può quindi muoversi soltanto nell$\text{\textgreek{’}}$intervallo:
+XL {\textless}= X {\textless}= XR
+
+e, con i valori attuali:
 
 24 {\textless}= X {\textless}= 320
 
-Non stiamo ancora definendo i bordi di una carreggiata. La strada non esiste e non avrebbe senso anticipare un problema
-che affronteremo più avanti. In questa fase vogliamo semplicemente garantire che lo sprite rimanga
-nell$\text{\textgreek{’}}$area che abbiamo scelto per le prove.
+Dal punto di vista del comportamento non è cambiato nulla rispetto all$\text{\textgreek{’}}$uso diretto dei numeri 24 e
+320.
 
-È però interessante notare come una regola del nostro mondo venga trasformata in due istruzioni.
+Dal punto di vista della struttura del programma, invece, la differenza è importante.
 
-Per noi la frase potrebbe essere:
+Il ciclo principale non ha più bisogno di conoscere quali siano i limiti. Deve soltanto sapere che esistono un limite
+sinistro XL e uno destro XR.
 
-l$\text{\textgreek{’}}$automobile non deve oltrepassare i bordi consentiti.
+Se domani decidessimo che il movimento deve avvenire fra 50 e 290, ci basterebbe modificare una sola riga:
 
-Il Commodore non comprende quella frase.
+xl=50:xr=290
 
-Dobbiamo tradurla in condizioni precise:
+e le istruzioni:
 
-if x{\textless}24 then x=24
+if x{\textless}xl then x=xl
 
-if x{\textgreater}320 then x=320
+if x{\textgreater}xr then x=xr
 
-Ed è esattamente così che, poco alla volta, nascerà il gioco: trasformando regole che nella nostra mente sembrano ovvie
-in condizioni numeriche che la macchina possa verificare.
+continuerebbero a funzionare senza alcuna variazione.
+
+È una distinzione che incontreremo sempre più spesso: una parte del programma contiene la logica,
+un$\text{\textgreek{’}}$altra contiene i valori sui quali quella logica deve lavorare.
+
+Oggi la differenza sembra piccola.
+
+Quando il programma crescerà, diventerà sempre più preziosa.
 
 \subsection{Il problema del numero 320}
-A questo punto incontriamo una difficoltà che nella M01 avevamo potuto quasi ignorare.
+Proprio il limite destro ci mette però davanti a una difficoltà interessante.
 
-Abbiamo appena stabilito che X possa arrivare fino a 320.
+Abbiamo stabilito:
+
+xr=320
+
+e quindi la nostra variabile X può assumere valori superiori a 255.
 
 Ma il registro:
 
 53248
 
-nel quale il VIC-II conserva la coordinata X dello sprite 0, occupa un solo byte.
+nel quale il VIC-II conserva la coordinata orizzontale dello sprite 0 è formato da un solo byte.
 
-Un byte dispone di otto bit e può quindi rappresentare valori da 0 a 255.
+Un byte contiene otto bit.
 
-Come facciamo allora a dire allo sprite di andare a 256?
+Con otto bit possiamo rappresentare 256 combinazioni:
+
+0 ... 255
+
+Come possiamo allora collocare lo sprite a X=256?
 
 O a 280?
 
-O a 320?
+O al nostro limite 320?
 
-La variabile BASIC X non ha alcun problema a contenere questi numeri. Il problema nasce quando dobbiamo trasferire la
-posizione al VIC-II.
+La variabile BASIC non ha alcun problema a contenere questi valori. La difficoltà nasce soltanto quando dobbiamo
+trasferirli al VIC-II.
 
-Il chip video risolve la questione utilizzando nove bit per la coordinata orizzontale degli sprite. Gli otto bit meno
-significativi dello sprite 0 vengono memorizzati nel registro 53248; il nono bit si trova invece nel registro 53264,
-condiviso fra tutti gli sprite. Il bit 0 di 53264 appartiene allo sprite 0, il bit 1 allo sprite 1 e così via. Questa
-organizzazione permette a ciascuno sprite di utilizzare coordinate X comprese in un intervallo a 9 bit. 
+La coordinata orizzontale degli sprite viene infatti rappresentata attraverso nove bit.
 
-Possiamo rappresentare la coordinata dello sprite 0 così:
+Gli otto bit meno significativi dello sprite 0 sono contenuti nel registro 53248.
 
-\ \ \ \ \ \ \ \ coordinata X
+Il nono bit si trova invece in un altro registro:
+
+53264
+
+Questo secondo registro è condiviso tra tutti gli otto sprite: ciascuno dei suoi bit costituisce il nono bit della
+coordinata X di uno sprite diverso.
+
+Per lo sprite 0 viene utilizzato il bit 0.
+
+Possiamo quindi immaginare la coordinata in questo modo:
+
+\ \ \ \ \ \ \ \ \ \ \ \ coordinata X
 
 
 \bigskip
 
-bit 8 {\textbar} bit 7 bit 6 bit 5 bit 4 bit 3 bit 2 bit 1 bit 0
+bit 8 \ \ \ \ bit 7 bit 6 bit 5 bit 4 bit 3 bit 2 bit 1 bit 0
 
-\ \ ↓ \ \ \ {\textbar} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ ↓ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-53264 \ {\textbar} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 53248
+53264 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 53248
 
 bit 0
 
 La nostra variabile X contiene il numero completo.
 
-Ora dobbiamo dividerlo nelle due parti che il VIC-II sa utilizzare.
+Adesso dobbiamo trasformarlo nella rappresentazione che il VIC-II si aspetta.
 
-\subsection{H e L: due parti della stessa coordinata}
-Le righe responsabili della separazione sono:
+\subsection{H e L: separiamo la coordinata}
+La conversione avviene attraverso:
 
-600 if x{\textless}256 then l=x:h=0
+610 if x{\textless}256 then l=x:h=0
 
-610 if x{\textgreater}255 then l=x-256:h=1
+620 if x{\textgreater}255 then l=x-256:h=1
 
 Abbiamo chiamato L la parte che finirà nel normale registro X e H il bit aggiuntivo.
 
-Consideriamo prima una posizione inferiore a 256.
-
-Supponiamo:
+Partiamo da un esempio semplice:
 
 X = 172
 
-La prima condizione è vera:
+Poiché 172 è inferiore a 256 viene eseguita:
 
 if x{\textless}256 then l=x:h=0
 
-e quindi otteniamo:
+ottenendo:
 
 L = 172
 
 H = 0
 
-L contiene direttamente la coordinata e il nono bit rimane spento.
+Non abbiamo bisogno del nono bit.
 
 Proviamo invece con:
 
 X = 300
 
-La prima condizione non è più vera e viene eseguita la seconda:
+Questa volta viene eseguita la seconda istruzione:
 
 if x{\textgreater}255 then l=x-256:h=1
 
-Calcoliamo:
+Otteniamo:
 
 L = 300 - 256
 
 L = 44
 
-e contemporaneamente:
+
+\bigskip
 
 H = 1
 
-Il valore 300 viene quindi spezzato in:
+La posizione 300 viene quindi rappresentata attraverso due valori:
 
 L = 44
 
 H = 1
 
-Non abbiamo perduto nulla.
-
-Il valore 44 rappresenta gli otto bit inferiori, mentre H=1 aggiunge il valore 256 rappresentato dal nono bit:
+Il significato rimane:
 
 256 + 44 = 300
 
-Anche qui il carattere : ci permette di eseguire due assegnazioni sulla stessa riga:
+Gli otto bit contenuti in L rappresentano 44, mentre H fornisce il bit aggiuntivo che vale 256.
 
-l=x:h=0
+A questo punto possiamo aggiornare immediatamente il registro principale:
 
-Quando la condizione dell$\text{\textgreek{’}}$IF è vera, vengono eseguite entrambe.
+630 poke 53248,l
 
-Calcolato L, possiamo scriverlo immediatamente nel registro dello sprite:
+La parte bassa della coordinata cambia praticamente ad ogni spostamento.
 
-620 poke 53248,l
+Per aggiornare H, invece, dobbiamo fare un po$\text{\textgreek{’}}$ più di attenzione.
 
-La parte bassa della coordinata viene quindi aggiornata ad ogni movimento.
-
-Rimane da occuparci di H.
-
-Ed è qui che dobbiamo stare più attenti.
-
-\subsection{Un registro condiviso}
-Potremmo pensare di fare semplicemente:
+\subsection{Un registro appartiene a otto sprite}
+Potremmo essere tentati di scrivere:
 
 poke 53264,h
 
-Per lo sprite 0 sembrerebbe funzionare.
+Per il nostro sprite sembrerebbe sufficiente.
 
-Ma 53264 non contiene soltanto il nostro nono bit.
+Ma 53264 non contiene soltanto il suo nono bit.
 
-Contiene quelli di tutti gli otto sprite.
+Contiene quelli di tutti gli sprite:
 
-In binario possiamo immaginarlo così:
+bit \ \ \ \ \ \ \ 7 6 5 4 3 2 1 0
 
-bit: \ \ \ \ \ \ 7 6 5 4 3 2 1 0
+sprite \ \ \ \ 7 6 5 4 3 2 1 0
 
-sprite: \ \ \ 7 6 5 4 3 2 1 0
+Scrivendo direttamente zero cancelleremmo anche i noni bit degli sprite da 1 a 7.
 
-Scrivere direttamente zero nel registro significherebbe spegnere contemporaneamente i noni bit di tutti gli sprite.
-Scrivere uno lascerebbe acceso soltanto quello dello sprite 0 e azzererebbe comunque gli altri sette.
+Scrivendo uno manterremmo acceso soltanto quello dello sprite 0 e spegneremmo comunque tutti gli altri.
 
-Adesso abbiamo ancora una sola automobile e potremmo persino farla franca.
+Adesso abbiamo ancora una sola automobile.
 
-Ma il gioco non rimarrà così a lungo.
+Ma sappiamo già che non rimarrà sola per molto.
 
-Dobbiamo imparare fin da ora a modificare soltanto il bit che ci appartiene.
+Conviene quindi imparare fin da ora a cambiare esclusivamente il bit che ci interessa.
 
-La riga:
+Per farlo utilizziamo:
 
-640 m=peek(53264)and254
+650 m=peek(53264)and254
 
-fa esattamente questo.
+Questa riga introduce un nuovo modo di ragionare.
 
-Per comprenderla dobbiamo incontrare un nuovo operatore logico: AND.
+Non stiamo più trattando il registro come un semplice numero.
 
-\subsection{AND e la prima maschera di bit}
-Il valore 254, in binario, è:
+Cominciamo a manipolarne direttamente i bit.
+
+\subsection{AND e la nostra prima maschera}
+Il numero 254, scritto in binario, diventa:
 
 11111110
 
-Ci interessa soprattutto l$\text{\textgreek{’}}$ultimo bit.
+L$\text{\textgreek{’}}$ultimo bit è zero.
 
-È zero.
+Gli altri sette sono uno.
 
-Gli altri sette sono tutti uno.
+L$\text{\textgreek{’}}$operatore logico AND confronta i bit corrispondenti di due valori. Il risultato sarà 1 soltanto
+quando entrambi i bit confrontati valgono 1.
 
-AND confronta i bit nelle stesse posizioni. Il bit del risultato diventa 1 soltanto quando entrambi i bit confrontati
-valgono 1.
-
-Se immaginiamo che il contenuto di 53264 sia:
+Immaginiamo che 53264 contenga:
 
 10110101
 
-e lo combiniamo con:
+Eseguiamo:
+
+10110101
+
+AND
 
 11111110
 
-otteniamo:
+{}-{}-{}-{}-{}-{}-{}-{}-
 
 10110100
 
-Osserviamo che cosa è accaduto.
+Che cosa è cambiato?
 
-I primi sette bit sono rimasti esattamente com$\text{\textgreek{’}}$erano.
+Soltanto il bit 0.
 
-Soltanto il bit 0 è stato forzato a zero.
+Gli altri sette hanno mantenuto esattamente il valore precedente.
 
-Possiamo rappresentarlo in modo ancora più generale:
+Possiamo quindi rappresentare la maschera in forma più generale:
 
 xxxxxxx?
 
@@ -708,191 +734,165 @@ AND
 
 xxxxxxx0
 
-Le x rappresentano bit dei quali non vogliamo modificare il valore.
+Le x indicano bit che vogliamo preservare.
 
-Questa sequenza di bit:
-
-11111110
-
-viene chiamata maschera, perché ci permette di selezionare con precisione quale parte del valore deve essere modificata.
-
-La riga completa:
+L$\text{\textgreek{’}}$operazione:
 
 m=peek(53264)and254
 
-compie quindi tre operazioni concettuali.
+legge quindi il registro, forza a zero soltanto il bit dello sprite 0 e conserva il risultato nella variabile M.
 
-Prima legge il registro con PEEK.
+A questo punto possiamo inserire il nuovo valore di H:
 
-Poi azzera soltanto il bit 0 mediante AND 254.
+660 poke 53264,m+h
 
-Infine conserva il risultato nella variabile M.
+Se:
 
-Adesso il bit dedicato allo sprite 0 è sicuramente zero, mentre gli altri sette sono rimasti intatti.
+H = 0
 
-Possiamo finalmente inserire il nuovo valore di H:
+il bit rimane spento.
 
-650 poke 53264,m+h
+Se:
 
-Se H=0, il bit rimane zero.
+H = 1
 
-Se H=1, aggiungendo uno lo riaccendiamo.
+viene acceso.
 
-Abbiamo così modificato esclusivamente la porzione del registro che appartiene alla nostra automobile.
+Gli altri sette bit restano invece invariati.
 
-È un piccolo passo nel programma, ma rappresenta un cambiamento importante nel modo in cui stiamo cominciando a guardare
-il Commodore. Non vediamo più soltanto indirizzi che contengono numeri. Cominciamo a osservare i singoli bit
-all$\text{\textgreek{’}}$interno di quei numeri e a intervenire soltanto su quelli che ci interessano.
+Abbiamo così imparato una delle tecniche che diventeranno sempre più importanti man mano che ci avvicineremo
+all$\text{\textgreek{’}}$hardware del Commodore: modificare soltanto i bit che ci appartengono, preservando gli altri.
 
-Quando più avanti entreremo nell$\text{\textgreek{’}}$Assembly, questo modo di ragionare diventerà ancora più
-importante.
+\subsection{Ma H non cambia quasi mai}
+Possiamo ancora evitare un$\text{\textgreek{’}}$operazione inutile.
 
-\subsection{Ma dobbiamo farlo davvero ogni volta?}
-Resta un$\text{\textgreek{’}}$ultima osservazione.
+Immaginiamo che l$\text{\textgreek{’}}$automobile si muova:
 
-Il byte basso della coordinata cambia praticamente ad ogni spostamento:
+100 → 103 → 106 → 109 → 112
 
-poke 53248,l
+Il valore di H rimane sempre:
 
-Il nono bit, invece, cambia molto raramente.
+0
 
-Se l$\text{\textgreek{’}}$automobile si muove:
-
-100 → 103 → 106 → 109
-
-H rimane sempre zero.
-
-Se si trova:
+Se invece siamo nella zona:
 
 280 → 283 → 286 → 289
 
-H rimane sempre uno.
+H rimane:
 
-Il suo valore cambia soltanto quando attraversiamo il confine fra le coordinate 255 e 256.
+1
 
-Perché allora dovremmo eseguire ogni volta:
+Il nono bit cambia soltanto quando attraversiamo il confine fra 255 e 256.
 
-peek(53264)
+Non avrebbe quindi molto senso leggere 53264, applicare la maschera e riscriverlo ad ogni singolo movimento.
 
-poi:
-
-and 254
-
-e infine un nuovo:
-
-poke 53264,...
-
-se sappiamo che nella maggior parte dei fotogrammi quel bit deve rimanere esattamente com$\text{\textgreek{’}}$è?
-
-È qui che entra in gioco la terza variabile che avevamo inizializzato all$\text{\textgreek{’}}$inizio:
+Per questo all$\text{\textgreek{’}}$inizio avevamo creato:
 
 oh=0
 
-Possiamo leggere OH come old H: il vecchio valore di H.
+Possiamo leggere OH come old H: il precedente valore di H.
 
 Dopo aver calcolato il nuovo valore troviamo infatti:
 
-630 if h=oh then 670
+640 if h=oh then 680
 
-La frase BASIC è quasi autoesplicativa:
+Se H e OH sono uguali significa che il nono bit non è cambiato.
 
-se H è ancora uguale al vecchio H, vai direttamente alla riga 670.
+Possiamo quindi saltare direttamente alla riga 680.
 
-In questo caso non tocchiamo affatto 53264.
+Soltanto quando i due valori sono diversi eseguiamo:
 
-Non ce n$\text{\textgreek{’}}$è bisogno.
+650 m=peek(53264)and254
 
-Soltanto se H è cambiato eseguiamo:
+660 poke 53264,m+h
 
-640 m=peek(53264)and254
+670 oh=h
 
-650 poke 53264,m+h
-
-660 oh=h
-
-Dopo aver modificato il registro aggiorniamo anche:
+Dopo aver aggiornato il registro memorizziamo anche il nuovo stato:
 
 oh=h
 
-così OH conserva il nuovo stato e potrà essere confrontato al movimento successivo.
+In questo modo, al movimento successivo, potremo confrontarlo nuovamente.
 
-È una piccola ottimizzazione, ma vale la pena comprenderne la logica perché introduce un principio che ci accompagnerà
-spesso:
+È una piccola ottimizzazione, ma nasce da un ragionamento molto semplice:
 
-se sappiamo che un valore non è cambiato, non sempre è necessario riscriverlo.
+se qualcosa non è cambiato, non abbiamo necessariamente bisogno di riscriverlo.
 
-Con il BASIC V2 questo genere di attenzione può diventare particolarmente utile. Ogni istruzione che evitiamo significa
-tempo che l$\text{\textgreek{’}}$interprete può dedicare al resto del gioco.
+Questa attenzione sarà particolarmente importante nel BASIC V2. L$\text{\textgreek{’}}$interprete non è veloce e il
+nostro gioco crescerà. Evitare operazioni inutili può quindi aiutarci a conservare tempo per tutto ciò che aggiungeremo
+in seguito.
 
-Non dobbiamo però cadere nell$\text{\textgreek{’}}$errore opposto e cercare di ottimizzare ogni singola riga prima che
-ce ne sia bisogno. Qui l$\text{\textgreek{’}}$intervento è semplice, leggibile e nasce direttamente dalla natura della
-coordinata a nove bit. Ha quindi senso introdurlo già adesso.
+Non significa che dobbiamo ossessionarci con l$\text{\textgreek{’}}$ottimizzazione di ogni istruzione fin
+dall$\text{\textgreek{’}}$inizio. Significa soltanto imparare a riconoscere i casi nei quali possiamo ottenere lo
+stesso risultato svolgendo meno lavoro.
 
 \subsection{Il ciclo si chiude}
-Dopo l$\text{\textgreek{’}}$eventuale aggiornamento del nono bit troviamo:
+L$\text{\textgreek{’}}$ultima istruzione della parte operativa è:
 
-670 goto 520
+680 goto 530
 
-Il programma torna alle due WAIT e ricomincia.
+Torniamo alle due WAIT.
 
-Possiamo finalmente osservare il ciclo nella sua interezza:
+E ricominciamo.
+
+Il nostro primo ciclo di gioco può essere riassunto così:
 
 \ \ \ \ \ \ \ attendi il riferimento video
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ \ \ \ \ \ leggi la tastiera
+\ \ \ \ \ \ \ \ \ \ \ \ leggi la tastiera
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ \ \ è richiesto movimento?
+\ \ \ \ \ \ \ \ \ è richiesto movimento?
 
-\ \ \ \ \ \ \ \ \ \ \ \ $\searrow $ \ \ \ \ \ \ \ \ \ \ $\searrow $
+\ \ \ \ \ \ \ \ \ \ \ \ \ $\searrow $ \ \ \ \ \ \ \ \ \ \ \ \ $\searrow $
 
-\ \ \ \ \ \ \ \ \ \ no \ \ \ \ \ \ \ \ \ \ \ \ sì
+\ \ \ \ \ \ \ \ \ \ \ no \ \ \ \ \ \ \ \ \ \ \ \ \ \ sì
 
-\ \ \ \ \ \ \ \ \ \ ↓ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ ↓ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ nuovo ciclo \ \ \ \ \ modifica X
+\ \ \ \ \ nuovo ciclo \ \ \ \ \ \ \ modifica X
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ applica i limiti
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ controlla XL/XR
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ calcola L e H
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ calcola L e H
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aggiorna il VIC-II
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aggiorna il VIC-II
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ↓
 
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nuovo ciclo
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nuovo ciclo
 
-È ancora estremamente semplice rispetto a ciò che diventerà il nostro programma, ma possiamo già riconoscere
-l$\text{\textgreek{’}}$embrione di qualcosa che accompagnerà l$\text{\textgreek{’}}$intero gioco.
+Il programma è ancora minuscolo rispetto a ciò che diventerà, ma la struttura fondamentale comincia già a essere
+riconoscibile.
 
-Esiste una fase di inizializzazione, eseguita una sola volta.
+All$\text{\textgreek{’}}$inizio esiste una fase di preparazione, eseguita una sola volta.
 
-Poi comincia un ciclo che non deve terminare: osserva l$\text{\textgreek{’}}$input, aggiorna lo stato del gioco e
-trasferisce il risultato all$\text{\textgreek{’}}$hardware.
+Poi il programma entra in un ciclo che continua a osservare l$\text{\textgreek{’}}$esterno, modificare lo stato del
+gioco e trasferire il risultato all$\text{\textgreek{’}}$hardware.
 
-Quando arriveranno gli avversari, le collisioni, i proiettili e la strada, il ciclo diventerà inevitabilmente più
-complesso.
+Quando arriveranno avversari, proiettili, collisioni e strada, questo ciclo inevitabilmente crescerà.
 
-Il principio, però, sarà ancora questo.
+Ma il principio rimarrà sostanzialmente lo stesso.
 
 \subsection{Il programma completo}
-Adesso possiamo leggere la M02 per intero.
+Possiamo adesso osservare la M02 nella sua interezza.
 
-Molte delle istruzioni iniziali appartengono direttamente alla M01 e non abbiamo bisogno di rispiegarle. Sappiamo già
-perché carichiamo 63 byte a partire dall$\text{\textgreek{’}}$indirizzo 832, perché il puntatore dello sprite 0
-contiene 13, come configuriamo il multicolor e perché abilitiamo lo sprite attraverso il registro 53269.
+Gran parte dell$\text{\textgreek{’}}$inizializzazione deriva direttamente dalla M01 e non abbiamo bisogno di studiarla
+nuovamente: sappiamo già perché lo sprite occupa 63 byte, perché li memorizziamo a partire da 832, perché il puntatore
+contiene 13 e come vengono configurati modalità multicolor e colori.
 
-La parte nuova comincia con la posizione iniziale e diventa evidente soprattutto dalla riga 480 in avanti, dove il
-programma smette di limitarsi a preparare il VIC-II ed entra nel suo primo vero ciclo interattivo.
+Questa volta dobbiamo soprattutto osservare ciò che cambia: la posizione diventa uno stato modificabile, i limiti
+laterali acquistano un nome, nasce un ciclo principale, leggiamo l$\text{\textgreek{’}}$input e affrontiamo per la
+prima volta la coordinata X a nove bit.
 
 10 rem ===============================
 
@@ -940,169 +940,175 @@ programma smette di limitarsi a preparare il VIC-II ed entra nel suo primo vero 
 
 230 rem
 
-240 rem posizione iniziale
+240 rem posizione e limiti laterali
 
 250 x=172:h=0:oh=0
 
-260 poke 53248,x
+260 xl=24:xr=320
 
-270 poke 53249,120
+270 poke 53248,x
 
-280 m=peek(53264)and254
+280 poke 53249,120
 
-290 poke 53264,m
+290 m=peek(53264)and254
 
-300 rem
+300 poke 53264,m
 
-310 rem nessun ingrandimento
+310 rem
 
-320 poke 53271,0
+320 rem nessun ingrandimento
 
-330 poke 53277,0
+330 poke 53271,0
 
-340 rem
+340 poke 53277,0
 
-350 rem sprite 0 in multicolor
+350 rem
 
-360 poke 53276,1
+360 rem sprite 0 in multicolor
 
-370 rem
+370 poke 53276,1
 
-380 rem multicolor 1 = bianco
+380 rem
 
-390 poke 53285,1
+390 rem multicolor 1 = bianco
 
-400 rem multicolor 2 = nero
+400 poke 53285,1
 
-410 poke 53286,0
+410 rem multicolor 2 = nero
 
-420 rem colore sprite 0 = rosso
+420 poke 53286,0
 
-430 poke 53287,2
+430 rem colore sprite 0 = rosso
 
-440 rem
+440 poke 53287,2
 
-450 rem abilita lo sprite 0
+450 rem
 
-460 poke 53269,1
+460 rem abilita lo sprite 0
 
-470 rem
+470 poke 53269,1
 
-480 rem 3 pixel per fotogramma
+480 rem
 
-490 s=3
+490 rem 3 pixel per fotogramma
 
-500 rem
+500 s=3
 
-510 rem ciclo principale
+510 rem
 
-520 wait 53266,128
+520 rem ciclo principale
 
-530 wait 53266,128,128
+530 wait 53266,128
 
-540 k=peek(197)
+540 wait 53266,128,128
 
-550 if k=10 then x=x-s:goto 580
+550 k=peek(197)
 
-560 if k=18 then x=x+s:goto 580
+560 if k=10 then x=x-s:goto 590
 
-570 goto 520
+570 if k=18 then x=x+s:goto 590
 
-580 if x{\textless}24 then x=24
+580 goto 530
 
-590 if x{\textgreater}320 then x=320
+590 if x{\textless}xl then x=xl
 
-600 if x{\textless}256 then l=x:h=0
+600 if x{\textgreater}xr then x=xr
 
-610 if x{\textgreater}255 then l=x-256:h=1
+610 if x{\textless}256 then l=x:h=0
 
-620 poke 53248,l
+620 if x{\textgreater}255 then l=x-256:h=1
 
-630 if h=oh then 670
+630 poke 53248,l
 
-640 m=peek(53264)and254
+640 if h=oh then 680
 
-650 poke 53264,m+h
+650 m=peek(53264)and254
 
-660 oh=h
+660 poke 53264,m+h
 
-670 goto 520
+670 oh=h
 
-680 rem
+680 goto 530
 
-690 rem ===============================
+690 rem
 
-700 rem dati grafici dello sprite
+700 rem ===============================
 
-710 rem 21 righe x 3 byte = 63 byte
+710 rem dati grafici dello sprite
 
-720 rem ===============================
+720 rem 21 righe x 3 byte = 63 byte
 
-730 data \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0
+730 rem ===============================
 
-740 data \ \ 3, 255, 192, \ \ 0, 170, \ \ 0
+740 data \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0, \ \ 0
 
-750 data \ \ 0, \ 40, \ \ 0, \ \ 1, 170, \ 64
+750 data \ \ 3, 255, 192, \ \ 0, 170, \ \ 0
 
-760 data \ \ 3, 150, 192, \ \ 3, 150, 192
+760 data \ \ 0, \ 40, \ \ 0, \ \ 1, 170, \ 64
 
-770 data \ \ 3, 150, 192, \ \ 0, 150, \ \ 0
+770 data \ \ 3, 150, 192, \ \ 3, 150, 192
 
-780 data \ \ 0, 150, \ \ 0, \ \ 0, 170, \ \ 0
+780 data \ \ 3, 150, 192, \ \ 0, 150, \ \ 0
 
-790 data \ \ 0, 190, \ \ 0, \ \ 5, 186, \ 80
+790 data \ \ 0, 150, \ \ 0, \ \ 0, 170, \ \ 0
 
-800 data \ 15, 190, 240, \ 15, 170, 240
+800 data \ \ 0, 190, \ \ 0, \ \ 5, 186, \ 80
 
-810 data \ 15, 255, 240, \ \ 2, 170, 128
+810 data \ 15, 190, 240, \ 15, 170, 240
 
-820 data \ \ 2, 170, 128, \ \ 0, \ \ 0, \ \ 0
+820 data \ 15, 255, 240, \ \ 2, 170, 128
 
-830 data \ \ 0, \ \ 0, \ \ 0
+830 data \ \ 2, 170, 128, \ \ 0, \ \ 0, \ \ 0
 
-Se confrontiamo ciò che vediamo sul monitor con tutto quello che abbiamo appena costruito, la sproporzione è quasi
-divertente.
+840 data \ \ 0, \ \ 0, \ \ 0
 
-Sul monitor accade pochissimo.
+Se confrontiamo ciò che vediamo sul monitor con tutto ciò che il programma deve fare per produrlo, la sproporzione è
+quasi sorprendente.
 
-Premiamo un comando e una piccola automobile si sposta.
+Agli occhi del giocatore accade pochissimo: premiamo un comando e l$\text{\textgreek{’}}$automobile si sposta.
 
-Dietro quel gesto, però, il programma aspetta il proprio riferimento temporale, legge una locazione di memoria,
-interpreta un codice, verifica una condizione, modifica una variabile, controlla i limiti, separa una coordinata in due
-parti, manipola un singolo bit dentro un registro condiviso e infine comunica al VIC-II la nuova posizione.
+Dietro quel gesto, però, il BASIC attende il proprio riferimento temporale, legge una locazione di memoria, interpreta
+un codice, valuta una condizione, modifica una variabile, confronta quella variabile con due limiti, scompone una
+coordinata in due parti, verifica se un singolo bit debba essere modificato e infine comunica la nuova posizione al
+VIC-II.
 
 Poi ricomincia.
 
-Il giocatore non vede niente di tutto questo.
+Il giocatore non vede K, X, XL, XR, L, H, OH oppure M. Non vede la maschera 254, non percepisce le due istruzioni WAIT e
+non sa che una parte della coordinata si trova in un registro diverso dalle altre.
 
-E non deve vederlo.
+Non deve saperlo.
 
-Per lui la macchina deve semplicemente rispondere.
+Per lui l$\text{\textgreek{’}}$automobile deve semplicemente muoversi.
 
-Per noi, invece, proprio questa invisibilità rende interessante il lavoro. Ogni comportamento che sullo schermo appare
-naturale è il risultato di una catena di decisioni che abbiamo dovuto rendere esplicite.
+Per noi, invece, proprio ciò che rimane invisibile costituisce la parte interessante.
 
-Qualche volta, da ragazzo, davanti a un videogioco mi ero chiesto come facesse una macchina a sapere che avevo mosso un
-comando e a spostare immediatamente qualcosa sullo schermo.
+Da ragazzo, davanti ai videogiochi, continuavo a chiedermi come facesse una macchina a sapere che avevo premuto un
+comando e a far reagire immediatamente qualcosa sullo schermo.
 
-Quella vecchia domanda aveva una forma molto semplice:
+La domanda era sempre la stessa.
 
 Come fa?
 
-Adesso, almeno per questo piccolissimo pezzo del problema, possiamo finalmente rispondere.
+Adesso, almeno per questo piccolissimo pezzo del problema, possiamo cominciare a dare una risposta.
 
-Non lo sa.
+Il Commodore non sa che stiamo guidando un$\text{\textgreek{’}}$automobile. Non conosce il significato di destra e
+sinistra e non può immaginare che quei valori numerici rappresentino i bordi entro i quali vogliamo muoverci.
 
-Non capisce che stiamo guidando un$\text{\textgreek{’}}$automobile e non sa nemmeno che quella figura rossa sia
-un$\text{\textgreek{’}}$automobile. Legge numeri, verifica condizioni, modifica bit e scrive altri numeri nei registri
-del VIC-II.
+Legge numeri.
 
-Siamo noi ad aver trasformato quella sequenza di operazioni in movimento.
+Verifica condizioni.
 
-E per la prima volta da quando abbiamo iniziato a costruire il nostro gioco, l$\text{\textgreek{’}}$automobile non è più
-soltanto comparsa sullo schermo.
+Modifica bit.
 
-Adesso possiamo guidarla.
+Scrive altri numeri nei registri del VIC-II.
+
+Siamo noi ad aver attribuito a tutte quelle operazioni un significato.
+
+Ed è forse questo il cambiamento più importante rispetto alla M01. La nostra automobile non è più semplicemente un
+disegno che siamo riusciti a far comparire sul monitor.
+
+Adesso, finalmente, possiamo guidarla.
 
 
 \bigskip

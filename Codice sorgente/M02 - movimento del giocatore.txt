@@ -21,63 +21,64 @@
 210 rem puntatore sprite 0 = 2040
 220 poke 2040,13
 230 rem
-240 rem posizione iniziale
+240 rem posizione e limiti laterali
 250 x=172:h=0:oh=0
-260 poke 53248,x
-270 poke 53249,120
-280 m=peek(53264)and254
-290 poke 53264,m
-300 rem
-310 rem nessun ingrandimento
-320 poke 53271,0
-330 poke 53277,0
-340 rem
-350 rem sprite 0 in multicolor
-360 poke 53276,1
-370 rem
-380 rem multicolor 1 = bianco
-390 poke 53285,1
-400 rem multicolor 2 = nero
-410 poke 53286,0
-420 rem colore sprite 0 = rosso
-430 poke 53287,2
-440 rem
-450 rem abilita lo sprite 0
-460 poke 53269,1
-470 rem
-480 rem 3 pixel per fotogramma
-490 s=3
-500 rem
-510 rem ciclo principale
-520 wait 53266,128
-530 wait 53266,128,128
-540 k=peek(197)
-550 if k=10 then x=x-s:goto 580
-560 if k=18 then x=x+s:goto 580
-570 goto 520
-580 if x<24 then x=24
-590 if x>320 then x=320
-600 if x<256 then l=x:h=0
-610 if x>255 then l=x-256:h=1
-620 poke 53248,l
-630 if h=oh then 670
-640 m=peek(53264)and254
-650 poke 53264,m+h
-660 oh=h
-670 goto 520
-680 rem
-690 rem ===============================
-700 rem dati grafici dello sprite
-710 rem 21 righe x 3 byte = 63 byte
-720 rem ===============================
-730 data   0,   0,   0,   0,   0,   0
-740 data   3, 255, 192,   0, 170,   0
-750 data   0,  40,   0,   1, 170,  64
-760 data   3, 150, 192,   3, 150, 192
-770 data   3, 150, 192,   0, 150,   0
-780 data   0, 150,   0,   0, 170,   0
-790 data   0, 190,   0,   5, 186,  80
-800 data  15, 190, 240,  15, 170, 240
-810 data  15, 255, 240,   2, 170, 128
-820 data   2, 170, 128,   0,   0,   0
-830 data   0,   0,   0
+260 xl=24:xr=320
+270 poke 53248,x
+280 poke 53249,120
+290 m=peek(53264)and254
+300 poke 53264,m
+310 rem
+320 rem nessun ingrandimento
+330 poke 53271,0
+340 poke 53277,0
+350 rem
+360 rem sprite 0 in multicolor
+370 poke 53276,1
+380 rem
+390 rem multicolor 1 = bianco
+400 poke 53285,1
+410 rem multicolor 2 = nero
+420 poke 53286,0
+430 rem colore sprite 0 = rosso
+440 poke 53287,2
+450 rem
+460 rem abilita lo sprite 0
+470 poke 53269,1
+480 rem
+490 rem 3 pixel per fotogramma
+500 s=3
+510 rem
+520 rem ciclo principale
+530 wait 53266,128
+540 wait 53266,128,128
+550 k=peek(197)
+560 if k=10 then x=x-s:goto 590
+570 if k=18 then x=x+s:goto 590
+580 goto 530
+590 if x<xl then x=xl
+600 if x>xr then x=xr
+610 if x<256 then l=x:h=0
+620 if x>255 then l=x-256:h=1
+630 poke 53248,l
+640 if h=oh then 680
+650 m=peek(53264)and254
+660 poke 53264,m+h
+670 oh=h
+680 goto 530
+690 rem
+700 rem ===============================
+710 rem dati grafici dello sprite
+720 rem 21 righe x 3 byte = 63 byte
+730 rem ===============================
+740 data   0,   0,   0,   0,   0,   0
+750 data   3, 255, 192,   0, 170,   0
+760 data   0,  40,   0,   1, 170,  64
+770 data   3, 150, 192,   3, 150, 192
+780 data   3, 150, 192,   0, 150,   0
+790 data   0, 150,   0,   0, 170,   0
+800 data   0, 190,   0,   5, 186,  80
+810 data  15, 190, 240,  15, 170, 240
+820 data  15, 255, 240,   2, 170, 128
+830 data   2, 170, 128,   0,   0,   0
+840 data   0,   0,   0
