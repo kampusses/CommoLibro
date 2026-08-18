@@ -6,8 +6,8 @@ LINGUAGGIO: BASIC V2
 
 STATO:  
 M01 – compare l'automobile           - OK  
-M02 – movimento con joystick         - IN SVILUPPO  
-M03 – limiti dell'area di gioco  
+M02 – movimento con joystick         - OK  
+M03 – limiti dell'area di gioco      - IN SVILUPPO  
 M04 – primo avversario  
 M05 – movimento dell'avversario  
 M06 – collisioni  
