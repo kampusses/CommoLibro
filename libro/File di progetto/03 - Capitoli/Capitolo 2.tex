@@ -2,11 +2,11 @@
 % see http://writer2latex.sourceforge.net for more info
 \documentclass{article}
 \usepackage{calc,amsmath,amssymb,amsfonts}
-\usepackage[T1]{fontenc}
-\usepackage[italian]{babel}
+\usepackage[LGR,T1]{fontenc}
+\usepackage[greek,italian]{babel}
 \usepackage[style=numeric,backend=biber]{biblatex}
-\author{utente}
-\date{2026-08-18}
+\author{HP}
+\date{2026-08-19}
 \begin{document}
 Capitolo 2 – La prima automobile
 
@@ -26,19 +26,17 @@ finale molto prima di essere in grado di costruirlo.
 
 Un programma, invece, ci costringe a procedere in un altro modo. Prima della strada deve esistere qualcosa che possa
 percorrerla; prima degli avversari deve esserci il veicolo del giocatore; prima di leggere il joystick dobbiamo avere
-qualcosa da muovere. La nostra prima milestone, che chiameremo semplicemente M01, avrà quindi un obiettivo molto più
-modesto dell'intero videogioco: fare comparire sullo schermo la nostra automobile.
+qualcosa da muovere. Il nostro primo codice avrà quindi un obiettivo molto più modesto dell'intero videogioco: fare
+comparire sullo schermo la nostra automobile.
 
 Potrebbe sembrare poco. In realtà sarà sufficiente per costringerci a entrare per la prima volta dentro il funzionamento
 del VIC-II e a scoprire uno degli strumenti che hanno reso il Commodore 64 una macchina particolarmente adatta ai
 videogiochi.
 
-Prima prepariamo lo schermo
-
-Il nostro primo listato comincia senza occuparsi ancora dell'automobile. Prima di mostrare qualsiasi cosa, vogliamo
-infatti sapere in quale condizione si trova lo schermo sul quale lavoreremo.
-
-Le prime istruzioni operative della M01 sono queste:
+\subsection{Prima prepariamo lo schermo}
+Il nostro primo listato comincia senza occuparsi ancora dell$\text{\textgreek{’}}$automobile. Prima di mostrare
+qualsiasi cosa, vogliamo sapere in quale condizione si trova lo schermo sul quale lavoreremo. Le prime istruzioni
+operative sono queste:
 
 60 rem pulisce lo schermo
 
@@ -52,9 +50,108 @@ Le prime istruzioni operative della M01 sono queste:
 
 110 poke 53281,15
 
-PRINT CHR\$(147) invia al Commodore il carattere di controllo che pulisce lo schermo. Potremmo eseguire il programma
-anche senza questa istruzione, ma il risultato dipenderebbe da ciò che era presente sul monitor prima del RUN.
-Preferiamo invece che sia il programma stesso a costruire, per quanto possibile, il proprio stato iniziale.
+L$\text{\textgreek{’}}$istruzione PRINT non ci è nuova. Molti anni fa il professor Rossi Brunori
+l$\text{\textgreek{’}}$aveva utilizzata per farmi vedere comparire sullo schermo il primo CIAO e avevamo imparato ad
+associarla, almeno inizialmente, all$\text{\textgreek{’}}$idea di mostrare qualcosa sul monitor.
+
+Questa volta, però, dopo PRINT non troviamo una parola racchiusa tra virgolette, compare invece qualcosa di nuovo:
+
+chr\$(147)
+
+CHR\$ è una funzione del BASIC. Riceve un numero compreso tra 0 e 255 e restituisce il carattere associato a quel
+codice. Il valore ottenuto può quindi essere utilizzato da PRINT, esattamente come qualsiasi altra stringa. Questo non
+significa necessariamente che sullo schermo debba comparire un simbolo.
+
+Il Commodore 64 utilizza infatti una propria codifica dei caratteri, oggi comunemente conosciuta come \textbf{PETSCII},
+nella quale accanto a lettere, numeri, segni di punteggiatura e simboli grafici troviamo anche numerosi \textbf{codici
+di controllo}. Alcuni spostano il cursore, altri modificano il colore del testo, attivano o disattivano il reverse,
+cambiano il set di caratteri oppure eseguono operazioni sullo schermo. Il numero 147 appartiene proprio a questa
+seconda categoria.
+
+print chr\$(147)
+
+non stampa quindi il disegno corrispondente al numero 147. Invia al sistema il codice \textbf{CLR/HOME}, che pulisce lo
+schermo e riporta il cursore nella posizione iniziale. 
+
+È per questo che la nostra prima istruzione operativa produce l$\text{\textgreek{’}}$impressione che il programma inizi
+da uno schermo nuovo. Potremmo anche ometterla. Il programma continuerebbe a funzionare, ma ciò che vedremmo
+dipenderebbe da quello che si trovava sul monitor prima del RUN: vecchi comandi, messaggi, eventuali prove effettuate
+in precedenza. Preferiamo invece che sia il programma stesso, per quanto possibile, a costruire lo stato dal quale
+vuole partire.
+
+\subsubsection{Esperimento – Che cosa nasconde CHR\$?}
+Prima di continuare con il nostro gioco vale la pena fermarsi per qualche minuto e lasciare che sia il Commodore a
+mostrarci che cosa significhi realmente CHR\$.
+
+In modalità diretta proviamo:
+
+print chr\$(65)
+
+Sul monitor compare:
+
+A
+
+Questa volta il codice corrisponde a un carattere visibile.
+
+Proviamo invece:
+
+print chr\$(18);{\textquotedbl}COMMODORE 64{\textquotedbl}
+
+Il codice 18 attiva la modalità reverse e il testo successivo viene visualizzato con i caratteri invertiti. Possiamo
+disattivarla con:
+
+print chr\$(146)
+
+Oppure possiamo provare:
+
+print chr\$(30);{\textquotedbl}VERDE{\textquotedbl}
+
+e osservare che il codice 30 modifica il colore del testo in verde. Anche colori, movimento del cursore e reverse
+possono infatti essere controllati attraverso appositi codici CHR\$. 
+
+Possiamo persino tornare al punto da cui siamo partiti:
+
+print chr\$(147)
+
+e cancellare in un istante tutte le prove appena eseguite.
+
+La tabella completa comprende tutti i valori da 0 a 255 e contiene, oltre ai codici di controllo, lettere, numeri,
+punteggiatura e numerosi simboli grafici. Troveremo la raccolta integrale nell$\text{\textgreek{’}}$appendice dedicata,
+dove potrà essere utilizzata come strumento di consultazione.
+
+\subsubsection{Laboratorio – Esploriamo PETSCII}
+Gli esperimenti precedenti utilizzavano valori che conoscevamo già. Possiamo adesso lasciare per qualche minuto il
+controllo al lettore.
+
+Scriviamo questo piccolo programma:
+
+10 print chr\$(147)
+
+20 for c=32 to 126
+
+30 print c;chr\$(c);{\textquotedbl} \ {\textquotedbl};
+
+40 next c
+
+Lo scopo non è ancora studiare nel dettaglio FOR e NEXT; li incontreremo tra poco nel vero programma dello sprite e sarà
+allora che ne comprenderemo bene il funzionamento. Per il momento possiamo considerarli semplicemente come un modo per
+chiedere al Commodore di ripetere le righe comprese fra 20 e 40 utilizzando valori successivi di C.
+
+Eseguiamo il programma e osserviamo il risultato.
+
+Accanto a ogni numero vedremo il carattere che CHR\$ gli associa. Possiamo quindi modificare
+l$\text{\textgreek{’}}$intervallo, provare valori differenti e confrontare ciò che appare sullo schermo.
+
+Conviene però non partire subito da 0 TO 255. In quell$\text{\textgreek{’}}$intervallo sono presenti numerosi codici di
+controllo: alcuni sposterebbero il cursore, cambierebbero colore o modalità di visualizzazione e CHR\$(147)
+cancellerebbe addirittura il risultato dell$\text{\textgreek{’}}$esperimento. È molto più istruttivo esplorare prima un
+intervallo prevalentemente stampabile e poi provare individualmente i codici di controllo che ci incuriosiscono.
+
+Quando avremo finito, sappiamo già come ripulire tutto:
+
+print chr\$(147)
+
+e possiamo tornare al nostro programma.
 
 Le due istruzioni successive ci fanno incontrare una parola che utilizzeremo moltissime volte: POKE.
 
