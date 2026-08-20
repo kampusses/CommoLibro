@@ -5,8 +5,8 @@
 \usepackage[LGR,T1]{fontenc}
 \usepackage[greek,italian]{babel}
 \usepackage[style=numeric,backend=biber]{biblatex}
-\author{HP}
-\date{2026-08-19}
+\author{utente}
+\date{2026-08-20}
 \begin{document}
 Capitolo 2 – La prima automobile
 
@@ -35,7 +35,7 @@ videogiochi.
 
 \subsection{Prima prepariamo lo schermo}
 Il nostro primo listato comincia senza occuparsi ancora dell$\text{\textgreek{’}}$automobile. Prima di mostrare
-qualsiasi cosa, vogliamo sapere in quale condizione si trova lo schermo sul quale lavoreremo. Le prime istruzioni
+qualsiasi cosa, vogliamo impostare la condizione iniziale dello schermo sul quale lavoreremo. Le prime istruzioni
 operative sono queste:
 
 60 rem pulisce lo schermo
@@ -58,7 +58,7 @@ Questa volta, però, dopo PRINT non troviamo una parola racchiusa tra virgolette
 
 chr\$(147)
 
-CHR\$ è una funzione del BASIC. Riceve un numero compreso tra 0 e 255 e restituisce il carattere associato a quel
+CHR\$ è una funzione del BASIC che riceve un numero compreso tra 0 e 255 e restituisce il carattere associato a quel
 codice. Il valore ottenuto può quindi essere utilizzato da PRINT, esattamente come qualsiasi altra stringa. Questo non
 significa necessariamente che sullo schermo debba comparire un simbolo.
 
@@ -70,8 +70,8 @@ seconda categoria.
 
 print chr\$(147)
 
-non stampa quindi il disegno corrispondente al numero 147. Invia al sistema il codice \textbf{CLR/HOME}, che pulisce lo
-schermo e riporta il cursore nella posizione iniziale. 
+non stampa quindi il simbolo corrispondente al numero 147, ma invia al sistema il codice \textbf{CLR/HOME}, che pulisce
+lo schermo e riporta il cursore nella posizione iniziale. 
 
 È per questo che la nostra prima istruzione operativa produce l$\text{\textgreek{’}}$impressione che il programma inizi
 da uno schermo nuovo. Potremmo anche ometterla. Il programma continuerebbe a funzionare, ma ciò che vedremmo
@@ -115,9 +115,9 @@ print chr\$(147)
 
 e cancellare in un istante tutte le prove appena eseguite.
 
-La tabella completa comprende tutti i valori da 0 a 255 e contiene, oltre ai codici di controllo, lettere, numeri,
-punteggiatura e numerosi simboli grafici. Troveremo la raccolta integrale nell$\text{\textgreek{’}}$appendice dedicata,
-dove potrà essere utilizzata come strumento di consultazione.
+La tabella PETSCII comprende tutti i valori da 0 a 255 e contiene, oltre ai codici di controllo, lettere, numeri,
+punteggiatura e numerosi simboli grafici. Troveremo la raccolta integrale nell$\text{\textgreek{’}}$appendice B
+dedicata, dove potrà essere utilizzata come strumento di consultazione.
 
 \subsubsection{Laboratorio – Esploriamo PETSCII}
 Gli esperimenti precedenti utilizzavano valori che conoscevamo già. Possiamo adesso lasciare per qualche minuto il
@@ -129,13 +129,14 @@ Scriviamo questo piccolo programma:
 
 20 for c=32 to 126
 
-30 print c;chr\$(c);{\textquotedbl} \ {\textquotedbl};
+30 print c;chr\$(c)
 
 40 next c
 
 Lo scopo non è ancora studiare nel dettaglio FOR e NEXT; li incontreremo tra poco nel vero programma dello sprite e sarà
 allora che ne comprenderemo bene il funzionamento. Per il momento possiamo considerarli semplicemente come un modo per
-chiedere al Commodore di ripetere le righe comprese fra 20 e 40 utilizzando valori successivi di C.
+chiedere al Commodore di ripetere le righe comprese fra 20 e 40 utilizzando l$\text{\textgreek{’}}$incremento di valori
+successivi di C da 32 a 126.
 
 Eseguiamo il programma e osserviamo il risultato.
 
@@ -147,7 +148,10 @@ controllo: alcuni sposterebbero il cursore, cambierebbero colore o modalità di 
 cancellerebbe addirittura il risultato dell$\text{\textgreek{’}}$esperimento. È molto più istruttivo esplorare prima un
 intervallo prevalentemente stampabile e poi provare individualmente i codici di controllo che ci incuriosiscono.
 
-Quando avremo finito, sappiamo già come ripulire tutto:
+Quando avremo finito, sappiamo già come ripulire tutto, sia la memoria (con l$\text{\textgreek{’}}$istruzione NEW, sia
+lo schermo):
+
+new
 
 print chr\$(147)
 
@@ -158,7 +162,7 @@ Le due istruzioni successive ci fanno incontrare una parola che utilizzeremo mol
 Nel BASIC del Commodore 64, POKE permette di scrivere direttamente un valore in una determinata locazione di memoria. La
 sua forma è molto semplice:
 
-POKE indirizzo,valore
+POKE indirizzo, valore
 
 Dietro questa semplicità si nasconde però una delle caratteristiche fondamentali della macchina. Sul Commodore 64 alcune
 locazioni di memoria non servono soltanto a conservare numeri: sono collegate direttamente ai dispositivi hardware.
